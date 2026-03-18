@@ -1,0 +1,19 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used by the paginator library to build
+    | the simple pagination links. You are free to update them according
+    | to your application's design and language preferences.
+    |
+    */
+
+    'previous' => 'Précédent',
+    'next' => 'Suivant',
+
+];
