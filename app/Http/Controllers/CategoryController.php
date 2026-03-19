@@ -61,16 +61,19 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
-        return redirect()->route('categories.index')->with('success', "La catégorie \"{$category->name}\" a été mise à jour avec succès !");
+        $this->toastr->success("La catégorie \"{$category->name}\" a été mise à jour avec succès !");
+        return redirect()->route('categories.index');
     }
 
     public function destroy(Category $category)
     {
         if ($category->members()->exists()) {
-            return redirect()->route('categories.index')->with('error', 'Impossible de supprimer : des membres sont liés.');
+            $this->toastr->error('Impossible de supprimer : des membres sont liés.');
+            return redirect()->route('categories.index');
         }
 
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Catégorie supprimée.');
+        $this->toastr->success('Catégorie supprimée avec succès !');
+        return redirect()->route('categories.index');
     }
 }

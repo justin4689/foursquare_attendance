@@ -7,6 +7,8 @@ use App\Models\Member;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Flasher\Toastr\Prime\ToastrInterface;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CulteController extends Controller
 {
@@ -48,6 +50,10 @@ class CulteController extends Controller
 
     public function show(Culte $culte)
     {
+        if ($culte->statut === 'passé') {
+            $this->finaliserAbsentsSiCultePasse($culte);
+        }
+
         $attendances = $culte->attendances()->with('member.category')->get();
         $present = $attendances->where('status', true);
         $absent = $attendances->where('status', false);
@@ -55,6 +61,27 @@ class CulteController extends Controller
         $statsByCategory = $present->groupBy(fn($a) => $a->member->category->name ?? 'NC')->map->count();
 
         return view('cultes.show', compact('culte', 'present', 'absent', 'statsByCategory'));
+    }
+
+    private function finaliserAbsentsSiCultePasse(Culte $culte): void
+    {
+        $existingMemberIds = Attendance::where('culte_id', $culte->id)->pluck('member_id');
+        $missingMemberIds = Member::whereNotIn('id', $existingMemberIds)->pluck('id');
+
+        if ($missingMemberIds->isEmpty()) {
+            return;
+        }
+
+        $now = now();
+        $rows = $missingMemberIds->map(fn ($memberId) => [
+            'culte_id' => $culte->id,
+            'member_id' => $memberId,
+            'status' => false,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ])->all();
+
+        DB::table('attendances')->insert($rows);
     }
 
     public function edit(Culte $culte)
@@ -133,6 +160,34 @@ class CulteController extends Controller
             );
         }
 
-        return redirect()->route('cultes.show', $culte)->with('success', 'Pointage enregistré.');
+        $this->toastr->success('Pointage enregistré avec succès !');
+        return redirect()->route('cultes.show', $culte);
+    }
+
+    public function generatePDF(Culte $culte)
+    {
+        // Finaliser les absents si le culte est passé
+        if ($culte->statut === 'passé') {
+            $this->finaliserAbsentsSiCultePasse($culte);
+        }
+
+        $attendances = $culte->attendances()->with('member.category')->get();
+        $present = $attendances->where('status', true);
+        $absent = $attendances->where('status', false);
+        $statsByCategory = $present->groupBy(fn($a) => $a->member->category->name ?? 'NC')->map->count();
+
+        $data = [
+            'culte' => $culte,
+            'present' => $present,
+            'absent' => $absent,
+            'statsByCategory' => $statsByCategory,
+            'totalPresent' => $present->count(),
+            'totalAbsent' => $absent->count(),
+            'totalMembers' => $attendances->count(),
+        ];
+
+        $pdf = PDF::loadView('cultes.pdf', $data);
+        
+        return $pdf->download("rapport-culte-{$culte->id}.pdf");
     }
 }

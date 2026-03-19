@@ -5,11 +5,26 @@
                 {{ $culte->name }}
             </h2>
 
-            <a href="{{ route('cultes.presence.edit', $culte) }}">
-                <x-primary-button type="button">
-                    {{ __('Faire le pointage') }}
-                </x-primary-button>
-            </a>
+
+             
+            
+
+            @if($culte->statut === 'passé')
+            <div  class="flex gap-3">
+                <a href="{{ route('cultes.presence.edit', $culte) }}">
+                    <x-primary-button type="button">
+                        {{ __('Faire le pointage') }}
+                    </x-primary-button>
+                </a>
+
+                <a href="{{ route('cultes.pdf', $culte) }}">
+                    <x-primary-button type="button" class="bg-green-600 hover:bg-green-700 focus:bg-green-700" style="background-color: rgb(34 197 94) !important; outline-color: rgb(34 197 94) !important;">
+                        {{ __('Exporter en PDF') }}
+                    </x-primary-button>
+                </a>
+                </div>
+            @endif
+
         </div>
     </x-slot>
 

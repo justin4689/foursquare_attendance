@@ -149,10 +149,7 @@ class AttendanceController extends Controller
 
         if ($alreadyExists) {
             $this->toastr->warning('Vous avez déjà pointé pour ce culte.');
-
-            return redirect()
-                ->route('attendance.pointage', ['member_id' => $request->member_id])
-                ->with('pointage_already', true);
+            return redirect()->route('attendance.pointage', ['member_id' => $request->member_id]);
         }
 
         Attendance::create([
@@ -164,14 +161,6 @@ class AttendanceController extends Controller
         // Utiliser Flasher Toastr pour le message de succès
         $this->toastr->success('Pointage enregistré avec succès !');
 
-        $culte = Culte::find($request->culte_id);
-
-        return redirect()
-            ->route('attendance.pointage', ['member_id' => $request->member_id])
-            ->with('pointage_success', true)
-            ->with('pointage_culte_name', $culte?->name)
-            ->with('pointage_culte_date', $culte?->date?->format('d/m/Y'))
-            ->with('pointage_culte_heure', $culte?->heure?->format('H:i'))
-            ->with('pointage_culte_fin', $culte?->fin?->format('H:i'));
+        return redirect()->route('attendance.pointage', ['member_id' => $request->member_id]);
     }
 }

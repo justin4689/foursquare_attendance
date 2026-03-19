@@ -64,6 +64,13 @@
                         </div>
                     </div>
 
+                    <!-- Verset Biblique -->
+                    <div class="text-center mt-6 mb-6">
+                        <p class="text-gray-600 italic text-sm">
+                            "La maturité pour une pêche abondante en eau profonde." — Luc 5:4
+                        </p>
+                    </div>
+
                     <!-- Register Form -->
                     <div id="registerForm" class="space-y-6 hidden">
                         <form method="POST" action="{{ route('members.store.public') }}" class="space-y-4">
@@ -120,6 +127,8 @@
                         </form>
                     </div>
 
+                    
+
                     <!-- Attendance Form -->
                     <div id="attendanceForm" class="space-y-6">
                         <form method="GET" action="{{ route('attendance.search') }}" class="space-y-4">
@@ -166,48 +175,7 @@
             </div>
         </div>
 
-        <!-- Statistiques -->
-        <div class="mt-2 max-w-md mx-auto">
-            <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">{{ __('Notre Communauté') }}</h3>
-                @php
-                    $totalMembers = \App\Models\Member::count();
-                    $permanentCount = \App\Models\Member::where('type', 'permanent')->count();
-                    $inviteCount = \App\Models\Member::where('type', 'invite')->count();
-                @endphp
-                @if($totalMembers > 0)
-                    <div class="space-y-3">
-                        <div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">{{ __('Permanents') }}</span>
-                                <span class="font-medium">{{ $permanentCount }} ({{ round($permanentCount / $totalMembers * 100, 1) }}%)</span>
-                            </div>
-                            <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-600 h-2 rounded-full" style="width: {{ $permanentCount / $totalMembers * 100 }}%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">{{ __('Invités') }}</span>
-                                <span class="font-medium">{{ $inviteCount }} ({{ round($inviteCount / $totalMembers * 100, 1) }}%)</span>
-                            </div>
-                            <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-orange-600 h-2 rounded-full" style="width: {{ $inviteCount / $totalMembers * 100 }}%"></div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4 pt-4 border-t">
-                            <span class="text-2xl font-bold text-blue-600">{{ $totalMembers }}</span>
-                            <div class="text-sm text-gray-500">{{ __('Membres totaux') }}</div>
-                        </div>
-                    </div>
-                @else
-                    <div class="text-center text-gray-500">
-                        {{ __('Aucun membre inscrit pour le moment') }}
-                    </div>
-                @endif
-            </div>
-        </div>
-
+    
         <script>
             function showRegister() {
                 document.getElementById('registerForm').classList.remove('hidden');

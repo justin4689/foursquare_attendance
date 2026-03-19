@@ -16,36 +16,23 @@
 
                         <div>
                             <x-input-label for="first_name" :value="__('Prénom')" />
-                            <x-text-input id="first_name" name="first_name" type="text" class="mt-1 block w-full" :value="old('first_name')" required autofocus />
+                            <x-text-input id="first_name" name="first_name" type="text" class="mt-1 block w-full" :value="old('first_name')" required autofocus placeholder="{{ __('Entrez votre prénom') }}" />
                             <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
                         </div>
 
                         <div>
                             <x-input-label for="last_name" :value="__('Nom')" />
-                            <x-text-input id="last_name" name="last_name" type="text" class="mt-1 block w-full" :value="old('last_name')" required />
+                            <x-text-input id="last_name" name="last_name" type="text" class="mt-1 block w-full" :value="old('last_name')" required placeholder="{{ __('Entrez votre nom') }}" />
                             <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
                         </div>
 
                         <div class="mb-4">
                             <x-input-label for="phone" :value="__('Téléphone')" />
-                            <x-text-input id="phone" name="phone" type="tel" class="block mt-1 w-full" />
+                            <x-text-input id="phone" name="phone" type="tel" class="block mt-1 w-full" placeholder="06 98 26 27 28" />
                             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="type" :value="__('Type de membre')" />
-                            <div class="mt-2 space-y-2">
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="type" value="permanent" checked class="form-radio text-blue-600">
-                                    <span class="ml-2">Permanent</span>
-                                </label>
-                                <label class="inline-flex items-center ml-4">
-                                    <input type="radio" name="type" value="invite" class="form-radio text-blue-600">
-                                    <span class="ml-2">Invité</span>
-                                </label>
-                            </div>
-                            <x-input-error :messages="$errors->get('type')" class="mt-2" />
-                        </div>
+                       
 
                         <div>
                             <x-input-label for="category_id" :value="__('Catégorie')" />
@@ -58,6 +45,20 @@
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+                        </div>
+                         <div class="mb-4">
+                            <x-input-label for="type" :value="__('Type de membre')" />
+                            <div class="mt-2 space-y-2">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="type" value="permanent" checked class="form-radio text-blue-600">
+                                    <span class="ml-2">Permanent</span>
+                                </label>
+                                <label class="inline-flex items-center ml-4">
+                                    <input type="radio" name="type" value="invite" class="form-radio text-blue-600">
+                                    <span class="ml-2">Invité</span>
+                                </label>
+                            </div>
+                            <x-input-error :messages="$errors->get('type')" class="mt-2" />
                         </div>
 
                         <div class="flex gap-2">
