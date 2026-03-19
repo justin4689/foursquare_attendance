@@ -27,6 +27,7 @@
                                     <th class="py-2 pr-4">{{ __('Prénom') }}</th>
                                     <th class="py-2 pr-4">{{ __('Catégorie') }}</th>
                                     <th class="py-2 pr-4">{{ __('Contact') }}</th>
+                                    <th class="py-2 pr-4">{{ __('Type') }}</th>
                                     <th class="py-2 pr-4">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
@@ -37,6 +38,13 @@
                                         <td class="py-2 pr-4">{{ $member->first_name }}</td>
                                         <td class="py-2 pr-4">{{ $member->category->name ?? '—' }}</td>
                                         <td class="py-2 pr-4">{{ $member->phone ?? '—' }}</td>
+                                        <td class="py-2 pr-4">
+                                            @if($member->type == 'permanent')
+                                                <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Permanent</span>
+                                            @elseif($member->type == 'invite')
+                                                <span class="bg-orange-100 text-orange-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-orange-200 dark:text-orange-900">Invite</span>
+                                            @endif
+                                        </td>
                                         <td class="py-2 pr-4">
                                             <a class="underline" href="{{ route('members.show', $member) }}">{{ __('Voir') }}</a>
                                             <span class="mx-1">|</span>

@@ -26,10 +26,25 @@
                             <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
                         </div>
 
-                        <div>
+                        <div class="mb-4">
                             <x-input-label for="phone" :value="__('Téléphone')" />
-                            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone')" />
+                            <x-text-input id="phone" name="phone" type="tel" class="block mt-1 w-full" />
                             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+                        </div>
+
+                        <div class="mb-4">
+                            <x-input-label for="type" :value="__('Type de membre')" />
+                            <div class="mt-2 space-y-2">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="type" value="permanent" checked class="form-radio text-blue-600">
+                                    <span class="ml-2">Permanent</span>
+                                </label>
+                                <label class="inline-flex items-center ml-4">
+                                    <input type="radio" name="type" value="invite" class="form-radio text-blue-600">
+                                    <span class="ml-2">Invité</span>
+                                </label>
+                            </div>
+                            <x-input-error :messages="$errors->get('type')" class="mt-2" />
                         </div>
 
                         <div>

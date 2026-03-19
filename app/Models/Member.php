@@ -12,6 +12,7 @@ class Member extends Model
     protected $fillable = [
         'first_name',
         'last_name',
+        'type',
         'category_id',
         'phone',
     ];
@@ -24,5 +25,15 @@ class Member extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function estPermanent(): bool
+    {
+        return $this->type === 'permanent';
+    }
+
+    public function estInvite(): bool
+    {
+        return $this->type === 'invite';
     }
 }

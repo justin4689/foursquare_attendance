@@ -19,9 +19,20 @@
                         <div class="font-semibold">{{ $member->first_name }}</div>
                     </div>
 
-                    <div>
-                        <div class="text-sm text-gray-500">{{ __('Téléphone') }}</div>
-                        <div class="font-semibold">{{ $member->phone ?? '—' }}</div>
+                    <div class="mb-4">
+                        <x-input-label :value="__('Téléphone')" />
+                        <p class="mt-1 text-gray-900">{{ $member->phone ?? '—' }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <x-input-label :value="__('Type de membre')" />
+                        <div class="mt-1">
+                            @if($member->type == 'permanent')
+                                <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Permanent</span>
+                            @elseif($member->type == 'invite')
+                                <span class="bg-orange-100 text-orange-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-orange-200 dark:text-orange-900">Invité</span>
+                            @endif
+                        </div>
                     </div>
 
                     <div>

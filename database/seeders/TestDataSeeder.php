@@ -27,21 +27,21 @@ class TestDataSeeder extends Seeder
 
         // Créer des membres
         $members = [
-            ['first_name' => 'Jean', 'last_name' => 'Dupont', 'phone' => '0123456789', 'category_id' => 1],
-            ['first_name' => 'Marie', 'last_name' => 'Martin', 'phone' => '0234567890', 'category_id' => 2],
-            ['first_name' => 'Pierre', 'last_name' => 'Durand', 'phone' => '0345678901', 'category_id' => 3],
-            ['first_name' => 'Sophie', 'last_name' => 'Lefebvre', 'phone' => '0456789012', 'category_id' => 3],
-            ['first_name' => 'Paul', 'last_name' => 'Bernard', 'phone' => '0567890123', 'category_id' => 4],
-            ['first_name' => 'Isabelle', 'last_name' => 'Robert', 'phone' => '0678901234', 'category_id' => 4],
-            ['first_name' => 'Michel', 'last_name' => 'Richard', 'phone' => '0789012345', 'category_id' => 1],
-            ['first_name' => 'Catherine', 'last_name' => 'Petit', 'phone' => '0890123456', 'category_id' => 2],
-            ['first_name' => 'David', 'last_name' => 'Dubois', 'phone' => '0901234567', 'category_id' => 3],
-            ['first_name' => 'Françoise', 'last_name' => 'Laurent', 'phone' => '0123456780', 'category_id' => 3],
-            ['first_name' => 'Jacques', 'last_name' => 'Simon', 'phone' => '0234567891', 'category_id' => 4],
-            ['first_name' => 'Nathalie', 'last_name' => 'Michel', 'phone' => '0345678902', 'category_id' => 2],
-            ['first_name' => 'Philippe', 'last_name' => 'Garcia', 'phone' => '0456789013', 'category_id' => 1],
-            ['first_name' => 'Monique', 'last_name' => 'Rousseau', 'phone' => '0567890124', 'category_id' => 2],
-            ['first_name' => 'Étienne', 'last_name' => 'Fournier', 'phone' => '0678901235', 'category_id' => 3],
+            ['first_name' => 'Jean', 'last_name' => 'Dupont', 'type' => 'permanent', 'phone' => '0123456789', 'category_id' => 1],
+            ['first_name' => 'Marie', 'last_name' => 'Martin', 'type' => 'permanent', 'phone' => '0234567890', 'category_id' => 2],
+            ['first_name' => 'Pierre', 'last_name' => 'Durand', 'type' => 'permanent', 'phone' => '0345678901', 'category_id' => 3],
+            ['first_name' => 'Sophie', 'last_name' => 'Lefebvre', 'type' => 'invite', 'phone' => '0456789012', 'category_id' => 3],
+            ['first_name' => 'Paul', 'last_name' => 'Bernard', 'type' => 'permanent', 'phone' => '0567890123', 'category_id' => 4],
+            ['first_name' => 'Isabelle', 'last_name' => 'Robert', 'type' => 'permanent', 'phone' => '0678901234', 'category_id' => 4],
+            ['first_name' => 'Michel', 'last_name' => 'Richard', 'type' => 'invite', 'phone' => '0789012345', 'category_id' => 1],
+            ['first_name' => 'Catherine', 'last_name' => 'Petit', 'type' => 'permanent', 'phone' => '0890123456', 'category_id' => 2],
+            ['first_name' => 'David', 'last_name' => 'Dubois', 'type' => 'permanent', 'phone' => '0901234567', 'category_id' => 3],
+            ['first_name' => 'Françoise', 'last_name' => 'Laurent', 'type' => 'invite', 'phone' => '0123456780', 'category_id' => 3],
+            ['first_name' => 'Jacques', 'last_name' => 'Simon', 'type' => 'permanent', 'phone' => '0234567891', 'category_id' => 4],
+            ['first_name' => 'Nathalie', 'last_name' => 'Michel', 'type' => 'permanent', 'phone' => '0345678902', 'category_id' => 2],
+            ['first_name' => 'Philippe', 'last_name' => 'Garcia', 'type' => 'invite', 'phone' => '0456789013', 'category_id' => 1],
+            ['first_name' => 'Monique', 'last_name' => 'Rousseau', 'type' => 'permanent', 'phone' => '0567890124', 'category_id' => 2],
+            ['first_name' => 'Étienne', 'last_name' => 'Fournier', 'type' => 'invite', 'phone' => '0678901235', 'category_id' => 3],
         ];
 
         foreach ($members as $member) {

@@ -29,6 +29,8 @@ class DashboardController extends Controller
             'members_count' => Member::count(),
             'cultes_count' => Culte::count(),
             'categories_count' => Category::count(),
+            'permanent_members_count' => Member::where('type', 'permanent')->count(),
+            'invite_members_count' => Member::where('type', 'invite')->count(),
             'last_culte' => $lastCultePasse,
         ];
 

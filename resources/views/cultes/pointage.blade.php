@@ -64,7 +64,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="member_search" :value="__('Rechercher un membre')" />
-                                <x-text-input id="member_search" name="member_search" type="text" class="mt-1 block w-full" placeholder="Nom ou email du membre" required />
+                                <x-text-input id="member_search" name="member_search" type="text" class="mt-1 block w-full" placeholder="Nom du membre" required />
                                 <x-input-error :messages="$errors->get('member_search')" class="mt-2" />
                             </div>
 

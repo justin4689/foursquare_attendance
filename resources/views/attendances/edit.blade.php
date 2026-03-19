@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pointage') }} — {{ $culte->name }} ({{ $culte->date }})
+            {{ __('Pointage') }} — {{ $culte->name }} ({{ $culte->date->format('d/m/Y') }} {{ $culte->heure->format('H:i') }} - {{ $culte->fin->format('H:i') }})
         </h2>
     </x-slot>
 

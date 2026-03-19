@@ -55,10 +55,10 @@
                     <!-- Tabs -->
                     <div class="flex justify-center mb-6">
                         <div class="inline-flex rounded-lg border border-gray-200">
-                            <button id="attendanceTab" class="px-6 py-2 text-sm font-medium bg-primary text-white rounded-l-lg" onclick="showAttendance()">
+                            <button id="attendanceTab" class="md:px-6 px-4 md:py-2 py-1 text-sm font-medium bg-primary text-white rounded-l-lg" onclick="showAttendance()">
                                 {{ __('Déjà inscrit') }}
                             </button>
-                            <button id="registerTab" class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-r-lg" onclick="showRegister()">
+                            <button id="registerTab" class="md:px-6 px-4 md:py-2 py-1 text-sm font-medium text-gray-700 bg-white rounded-r-lg" onclick="showRegister()">
                                 {{ __('Nouveau membre') }}
                             </button>
                         </div>
@@ -84,9 +84,7 @@
                                     <x-text-input id="phone" name="phone" type="text" class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" :value="old('phone')" placeholder="06 98 26 27 28" />
                                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                                 </div>
-                            </div>
-                          
-                            <div>
+                                 <div>
                                 <x-input-label for="category_id" :value="__('Catégorie')" />
                                 <select id="category_id" name="category_id" class="block mt-1 w-full border border-gray-300 px-3 py-2 focus:border-[#185696] focus:ring-[#185696] rounded-md shadow-sm" required>
                                     <option value="">{{ __('Choisir une catégorie') }}</option>
@@ -96,6 +94,24 @@
                                 </select>
                                 <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                             </div>
+
+                            <div class="mt-4">
+                                <x-input-label :value="__('Type de membre')" />
+                                <div class="mt-2 space-y-2">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="type" value="permanent" checked class="form-radio text-blue-600">
+                                        <span class="ml-2 text-sm">Permanent</span>
+                                    </label>
+                                    <label class="inline-flex items-center ml-4">
+                                        <input type="radio" name="type" value="invite" class="form-radio text-blue-600">
+                                        <span class="ml-2 text-sm">Invité</span>
+                                    </label>
+                                </div>
+                                <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                            </div>
+                            </div>
+                          
+                           
                             <div class="flex justify-center">
                                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90 transition">
                                     {{ __('S\'inscrire') }}
@@ -147,6 +163,48 @@
                         @endif
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="mt-2 max-w-md mx-auto">
+            <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">{{ __('Notre Communauté') }}</h3>
+                @php
+                    $totalMembers = \App\Models\Member::count();
+                    $permanentCount = \App\Models\Member::where('type', 'permanent')->count();
+                    $inviteCount = \App\Models\Member::where('type', 'invite')->count();
+                @endphp
+                @if($totalMembers > 0)
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">{{ __('Permanents') }}</span>
+                                <span class="font-medium">{{ $permanentCount }} ({{ round($permanentCount / $totalMembers * 100, 1) }}%)</span>
+                            </div>
+                            <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full" style="width: {{ $permanentCount / $totalMembers * 100 }}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">{{ __('Invités') }}</span>
+                                <span class="font-medium">{{ $inviteCount }} ({{ round($inviteCount / $totalMembers * 100, 1) }}%)</span>
+                            </div>
+                            <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-600 h-2 rounded-full" style="width: {{ $inviteCount / $totalMembers * 100 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4 pt-4 border-t">
+                            <span class="text-2xl font-bold text-blue-600">{{ $totalMembers }}</span>
+                            <div class="text-sm text-gray-500">{{ __('Membres totaux') }}</div>
+                        </div>
+                    </div>
+                @else
+                    <div class="text-center text-gray-500">
+                        {{ __('Aucun membre inscrit pour le moment') }}
+                    </div>
+                @endif
             </div>
         </div>
 

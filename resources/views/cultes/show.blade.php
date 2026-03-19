@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $culte->name }} — {{ $culte->date }}
+                {{ $culte->name }}
             </h2>
 
             <a href="{{ route('cultes.presence.edit', $culte) }}">
@@ -25,7 +25,8 @@
 
                     <div>
                         <div class="text-sm text-gray-500">{{ __('Date') }}</div>
-                        <div class="font-semibold">{{ $culte->date }}</div>
+                        <div class="font-semibold">{{ $culte->date->format('d/m/Y') }} {{ $culte->heure->format('H:i') }} à {{ $culte->fin->format('H:i') }}</div>
+
                     </div>
                 </div>
             </div>

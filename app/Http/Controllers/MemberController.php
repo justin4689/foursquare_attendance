@@ -33,6 +33,7 @@ class MemberController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'type' => 'required|in:permanent,invite',
             'category_id' => 'required|exists:categories,id',
             'phone' => 'nullable|string|max:20',
         ]);
@@ -49,6 +50,7 @@ class MemberController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'type' => 'required|in:permanent,invite',
             'category_id' => 'required|exists:categories,id',
             'phone' => 'nullable|string|max:20',
         ]);
@@ -76,6 +78,7 @@ class MemberController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'type' => 'required|in:permanent,invite',
             'category_id' => 'required|exists:categories,id',
             'phone' => 'nullable|string|max:20',
         ]);
