@@ -55,7 +55,20 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 # ================================
-# Stage 2: Production
+# Stage 2: Frontend build (Vite)
+# ================================
+FROM node:20-alpine AS frontend
+
+WORKDIR /app
+
+COPY package.json package-lock.json vite.config.js postcss.config.js tailwind.config.js ./
+COPY resources ./resources
+
+RUN npm ci
+RUN npm run build
+
+# ================================
+# Stage 3: Production
 # ================================
 FROM php:8.4-fpm-alpine AS production
 
@@ -76,6 +89,9 @@ COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 WORKDIR /var/www/html
 COPY --from=builder /app .
+
+# Copy Vite build output (manifest.json + assets)
+COPY --from=frontend /app/public/build /var/www/html/public/build
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
