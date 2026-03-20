@@ -64,8 +64,8 @@
                             <div class="text-sm text-gray-500">{{ __('Total pointés') }}</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-600">{{ $statsByCategory->get('Homme', 0) }}</div>
-                            <div class="text-sm text-gray-500">{{ __('Hommes') }}</div>
+                            <div class="text-2xl font-bold text-blue-600">{{ $presentGuests->count() }}</div>
+                            <div class="text-sm text-gray-500">{{ __('Invités présents') }}</div>
                         </div>
                     </div>
                 </div>

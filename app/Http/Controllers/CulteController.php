@@ -56,17 +56,20 @@ class CulteController extends Controller
 
         $attendances = $culte->attendances()->with('member.category')->get();
         $present = $attendances->where('status', true);
-        $absent = $attendances->where('status', false);
+        $absent = $attendances->where('status', false)->filter(fn($a) => $a->member->type === 'permanent');
 
         $statsByCategory = $present->groupBy(fn($a) => $a->member->category->name ?? 'NC')->map->count();
+        $presentGuests = $present->filter(fn($a) => $a->member->type === 'invite');
 
-        return view('cultes.show', compact('culte', 'present', 'absent', 'statsByCategory'));
+        return view('cultes.show', compact('culte', 'present', 'absent', 'statsByCategory', 'presentGuests'));
     }
 
     private function finaliserAbsentsSiCultePasse(Culte $culte): void
     {
         $existingMemberIds = Attendance::where('culte_id', $culte->id)->pluck('member_id');
-        $missingMemberIds = Member::whereNotIn('id', $existingMemberIds)->pluck('id');
+     $missingMemberIds = Member::where('type', 'permanent')
+    ->whereNotIn('id', $existingMemberIds)
+    ->pluck('id');
 
         if ($missingMemberIds->isEmpty()) {
             return;
@@ -173,8 +176,9 @@ class CulteController extends Controller
 
         $attendances = $culte->attendances()->with('member.category')->get();
         $present = $attendances->where('status', true);
-        $absent = $attendances->where('status', false);
+        $absent = $attendances->where('status', false)->filter(fn($a) => $a->member->type === 'permanent');
         $statsByCategory = $present->groupBy(fn($a) => $a->member->category->name ?? 'NC')->map->count();
+        $presentGuests = $present->filter(fn($a) => $a->member->type === 'invite');
 
         $data = [
             'culte' => $culte,
@@ -184,6 +188,7 @@ class CulteController extends Controller
             'totalPresent' => $present->count(),
             'totalAbsent' => $absent->count(),
             'totalMembers' => $attendances->count(),
+            'totalGuests' => $presentGuests->count(),
         ];
 
         $pdf = PDF::loadView('cultes.pdf', $data);

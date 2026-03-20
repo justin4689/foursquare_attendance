@@ -79,12 +79,6 @@
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        .present {
-            background-color: #d4edda;
-        }
-        .absent {
-            background-color: #f8d7da;
-        }
         .category-stats {
             margin-top: 20px;
         }
@@ -130,10 +124,12 @@
                         <div class="stat-label">Absents</div>
                     </div>
                 </td>
+               
+
                 <td>
                     <div class="card">
-                        <div class="stat-number">{{ $totalMembers }}</div>
-                        <div class="stat-label">Total Membres</div>
+                        <div class="stat-number">{{ $totalGuests }}</div>
+                        <div class="stat-label">Total Invités Présents</div>
                     </div>
                 </td>
             </tr>
@@ -150,18 +146,21 @@
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Catégorie</th>
+
                     <th>Contact</th>
+                    <th>Type</th>
                 </tr>
             </thead>
            
             <tbody>
                 @foreach($present as $index => $attendance)
-                <tr class="present">
+                <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $attendance->member->last_name ?? 'NC' }}</td>
                     <td>{{ $attendance->member->first_name ?? 'NC' }}</td>
                     <td>{{ $attendance->member->category->name ?? 'NC' }}</td>
                     <td>{{ $attendance->member->phone ?? 'NC' }}</td>
+                    <td>{{ $attendance->member->type ?? 'NC' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -180,21 +179,22 @@
                     <th>Prénom</th>
                     <th>Catégorie</th>
                     <th>Contact</th>
+                    <th>Type</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($absent as $index => $attendance)
-                <tr class="absent">
+                <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $attendance->member->last_name ?? 'NC' }}</td>
                     <td>{{ $attendance->member->first_name ?? 'NC' }}</td>
-                  
                     <td>{{ $attendance->member->category->name ?? 'NC' }}</td>
-                      <td>{{ $attendance->member->phone ?? 'NC' }}</td>
+                    <td>{{ $attendance->member->phone ?? 'NC' }}</td>
+                    <td>{{ $attendance->member->type ?? 'NC' }}</td>
                 </tr>
                 @endforeach
             </tbody>
-        </table>
+        </table>b
     </div>
     @endif
 
