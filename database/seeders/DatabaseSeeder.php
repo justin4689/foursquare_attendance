@@ -9,6 +9,7 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
+    
 
     /**
      * Seed the application's database.
@@ -22,10 +23,22 @@ class DatabaseSeeder extends Seeder
             TestDataSeeder::class,
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Créer un utilisateur pour se connecter
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
             'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        // Créer un utilisateur agent pour tester
+        User::create([
+            'name' => 'Agent',
+            'email' => 'agent@agent.com',
+            'password' => bcrypt('password'),
+            'role' => 'agent',
+            'email_verified_at' => now(),
         ]);
     }
 }

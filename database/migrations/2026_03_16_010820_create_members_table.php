@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->enum('type', ['permanent', 'invite'])->default('permanent');
-            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->cascadeOnDelete();
+            $table->string('lieu_habitation')->nullable();
+            $table->string('anniversaire_jour_mois', 5)->nullable();
             $table->string('phone')->nullable();
             $table->timestamps();
         });

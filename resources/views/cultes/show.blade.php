@@ -82,6 +82,8 @@
                                     <th class="py-2 pr-4">{{ __('Nom') }}</th>
                                     <th class="py-2 pr-4">{{ __('Prénom') }}</th>
                                     <th class="py-2 pr-4">{{ __('Catégorie') }}</th>
+                                    <th class="py-2 pr-4">{{ __('Contact') }}</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,6 +92,7 @@
                                         <td class="py-2 pr-4">{{ $attendance->member->last_name }}</td>
                                         <td class="py-2 pr-4">{{ $attendance->member->first_name }}</td>
                                         <td class="py-2 pr-4">{{ $attendance->member->category->name ?? '—' }}</td>
+                                        <td class="py-2 pr-4">{{ $attendance->member->phone ?? '—' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -113,6 +116,7 @@
                                     <th class="py-2 pr-4">{{ __('Nom') }}</th>
                                     <th class="py-2 pr-4">{{ __('Prénom') }}</th>
                                     <th class="py-2 pr-4">{{ __('Catégorie') }}</th>
+                                    <th class="py-2 pr-4">{{ __('Contact') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,6 +125,9 @@
                                         <td class="py-2 pr-4">{{ $attendance->member->last_name }}</td>
                                         <td class="py-2 pr-4">{{ $attendance->member->first_name }}</td>
                                         <td class="py-2 pr-4">{{ $attendance->member->category->name ?? '—' }}</td>
+                                        <td class="py-2 pr-4">{{ $attendance->member->phone ?? '—' }}</td>
+                                        
+    
                                     </tr>
                                 @empty
                                     <tr>

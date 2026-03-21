@@ -40,6 +40,18 @@
                         <div class="font-semibold">{{ $member->category->name ?? '—' }}</div>
                     </div>
 
+                    @if($member->type == 'permanent')
+                        <div>
+                            <div class="text-sm text-gray-500">{{ __('Lieu d\'habitation') }}</div>
+                            <div class="font-semibold">{{ $member->lieu_habitation ?? '—' }}</div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">{{ __('Anniversaire (jour/mois)') }}</div>
+                            <div class="font-semibold">{{ $member->anniversaire_jour_mois ?? '—' }}</div>
+                        </div>
+                    @endif
+
                     <div class="flex gap-2 pt-4">
                         <a href="{{ route('members.edit', $member) }}">
                             <x-primary-button type="button">

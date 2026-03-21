@@ -14,6 +14,8 @@ class Member extends Model
         'last_name',
         'type',
         'category_id',
+        'lieu_habitation',
+        'anniversaire_jour_mois',
         'phone',
     ];
 

@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-white p-4 rounded-lg shadow">
                     <h3 class="text-sm font-medium text-gray-500">{{ __('Total cultes') }}</h3>
-                    <p class="text-2xl font-bold text-[#185696]">{{ $cultes->count() }}</p>
+                    <p class="text-2xl font-bold text-[#185696]">{{ method_exists($cultes, 'total') ? $cultes->total() : $cultes->count() }}</p>
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow">
                     <h3 class="text-sm font-medium text-gray-500">{{ __('Cultes ce mois') }}</h3>

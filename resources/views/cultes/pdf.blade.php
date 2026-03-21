@@ -132,6 +132,8 @@
                         <div class="stat-label">Total Invités Présents</div>
                     </div>
                 </td>
+                
+              
             </tr>
         </table>
     </div>
@@ -194,7 +196,7 @@
                 </tr>
                 @endforeach
             </tbody>
-        </table>b
+        </table>
     </div>
     @endif
 

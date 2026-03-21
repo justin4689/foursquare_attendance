@@ -55,10 +55,10 @@
                     <!-- Tabs -->
                     <div class="flex justify-center mb-6">
                         <div class="inline-flex rounded-lg border border-gray-200">
-                            <button id="attendanceTab" class="md:px-6 px-4 md:py-2 py-1 text-sm font-medium bg-primary text-white rounded-l-lg" onclick="showAttendance()">
+                            <button type="button" id="attendanceTab" class="md:px-6 px-4 md:py-2 py-1 text-sm font-medium bg-primary text-white rounded-l-lg" onclick="showAttendance(event)">
                                 {{ __('Déjà inscrit') }}
                             </button>
-                            <button id="registerTab" class="md:px-6 px-4 md:py-2 py-1 text-sm font-medium text-gray-700 bg-white rounded-r-lg" onclick="showRegister()">
+                            <button type="button" id="registerTab" class="md:px-6 px-4 md:py-2 py-1 text-sm font-medium text-gray-700 bg-white rounded-r-lg" onclick="showRegister(event)">
                                 {{ __('Nouveau membre') }}
                             </button>
                         </div>
@@ -66,7 +66,7 @@
 
                     <!-- Verset Biblique -->
                     <div class="text-center mt-6 mb-6">
-                        <p class="text-gray-600 italic text-sm">
+                        <p class="text-gray-600  font-bold italic text-sm">
                             "La maturité pour une pêche abondante en eau profonde." — Luc 5:4
                         </p>
                     </div>
@@ -88,7 +88,7 @@
                                 </div>
                                 <div>
                                     <x-input-label for="phone" :value="__('Téléphone')" />
-                                    <x-text-input id="phone" name="phone" type="text" class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" :value="old('phone')" placeholder="06 98 26 27 28" />
+                                    <x-text-input id="phone" name="phone" type="text" class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" :value="old('phone')" placeholder="07 78 54 13 55" inputmode="numeric" maxlength="14" pattern="[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}" title="Format: 07 78 54 13 55 (10 chiffres)" />
                                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                                 </div>
                                  <div>
@@ -102,15 +102,25 @@
                                 <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                             </div>
 
+                            <div id="public-permanent-fields" class="hidden">
+                                <x-input-label for="public_lieu_habitation" :value="__('Lieu d\'habitation')" />
+                                <x-text-input id="public_lieu_habitation" name="lieu_habitation" type="text" class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" :value="old('lieu_habitation')" placeholder="{{ __('Ex: Abidjan, Yopougon') }}" />
+                            </div>
+
+                            <div id="public-permanent-fields-2" class="hidden">
+                                <x-input-label for="public_anniversaire_jour_mois" :value="__('Anniversaire (jour/mois)')" />
+                                <x-text-input id="public_anniversaire_jour_mois" name="anniversaire_jour_mois" type="text" class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" :value="old('anniversaire_jour_mois')" placeholder="{{ __('JJ/MM (ex: 05/11)') }}" inputmode="numeric" maxlength="5" pattern="\d{2}/\d{2}" title="JJ/MM" />
+                            </div>
+
                             <div class="mt-4">
                                 <x-input-label :value="__('Type de membre')" />
                                 <div class="mt-2 space-y-2">
                                     <label class="inline-flex items-center">
-                                        <input type="radio" name="type" value="permanent" checked class="form-radio text-blue-600">
+                                        <input type="radio" name="type" value="permanent" checked class="form-radio text-blue-600" onchange="togglePublicPermanentFields()">
                                         <span class="ml-2 text-sm">Permanent</span>
                                     </label>
                                     <label class="inline-flex items-center ml-4">
-                                        <input type="radio" name="type" value="invite" class="form-radio text-blue-600">
+                                        <input type="radio" name="type" value="invite" class="form-radio text-blue-600" onchange="togglePublicPermanentFields()">
                                         <span class="ml-2 text-sm">Invité</span>
                                     </label>
                                 </div>
@@ -177,16 +187,64 @@
 
     
         <script>
-            function showRegister() {
-                document.getElementById('registerForm').classList.remove('hidden');
-                document.getElementById('attendanceForm').classList.add('hidden');
-                document.getElementById('registerTab').classList.add('bg-primary', 'text-white');
-                document.getElementById('registerTab').classList.remove('bg-white', 'text-gray-700');
-                document.getElementById('attendanceTab').classList.remove('bg-primary', 'text-white');
-                document.getElementById('attendanceTab').classList.add('bg-white', 'text-gray-700');
+            function maskPhone(el) {
+                if (!el) return;
+                let v = el.value.replace(/[^0-9]/g, '').slice(0, 10);
+                
+                // Reformater complètement à chaque frappe
+                let formatted = '';
+                for (let i = 0; i < v.length; i++) {
+                    if (i > 0 && i % 2 === 0) {
+                        formatted += ' ';
+                    }
+                    formatted += v[i];
+                }
+                
+                el.value = formatted;
             }
 
-            function showAttendance() {
+            function togglePublicPermanentFields() {
+                const type = document.querySelector('#registerForm input[name="type"]:checked')?.value;
+                const block1 = document.getElementById('public-permanent-fields');
+                const block2 = document.getElementById('public-permanent-fields-2');
+
+                const isPermanent = type === 'permanent';
+                if (block1) block1.classList.toggle('hidden', !isPermanent);
+                if (block2) block2.classList.toggle('hidden', !isPermanent);
+            }
+
+            function maskJourMois(el) {
+                if (!el) return;
+                let v = (el.value || '').replace(/\D/g, '').slice(0, 4);
+                if (v.length >= 3) {
+                    v = v.slice(0, 2) + '/' + v.slice(2);
+                }
+                el.value = v;
+            }
+
+            togglePublicPermanentFields();
+            const publicPhone = document.getElementById('phone');
+            if (publicPhone) {
+                publicPhone.addEventListener('input', () => maskPhone(publicPhone));
+            }
+            const publicAnniv = document.getElementById('public_anniversaire_jour_mois');
+            if (publicAnniv) {
+                publicAnniv.addEventListener('input', () => maskJourMois(publicAnniv));
+                maskJourMois(publicAnniv);
+            }
+            function showRegister(e) {
+                if (e) e.preventDefault();
+                document.getElementById('attendanceForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('attendanceTab').classList.remove('bg-primary', 'text-white');
+                document.getElementById('attendanceTab').classList.add('bg-white', 'text-gray-700');
+                document.getElementById('registerTab').classList.add('bg-primary', 'text-white');
+                document.getElementById('registerTab').classList.remove('bg-white', 'text-gray-700');
+                togglePublicPermanentFields();
+            }
+
+            function showAttendance(e) {
+                if (e) e.preventDefault();
                 document.getElementById('registerForm').classList.add('hidden');
                 document.getElementById('attendanceForm').classList.remove('hidden');
                 document.getElementById('attendanceTab').classList.add('bg-primary', 'text-white');

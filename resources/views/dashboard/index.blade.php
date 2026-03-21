@@ -8,14 +8,11 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-2xl font-bold text-blue-600">{{ $stats['members_count'] }}</div>
-                    <div class="text-sm text-gray-500">{{ __('Membres') }}</div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+               
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="text-2xl font-bold text-green-600">{{ $stats['permanent_members_count'] }}</div>
-                    <div class="text-sm text-gray-500">{{ __('Permanents') }}</div>
+                    <div class="text-sm text-gray-500">{{ __('Membres Permanents') }}</div>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="text-2xl font-bold text-orange-600">{{ $stats['invite_members_count'] }}</div>
@@ -31,36 +28,7 @@
                 </div>
             </div>
 
-            <!-- Ratio Permanents vs Invités -->
-            @if($stats['members_count'] > 0)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Répartition des membres') }}</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">{{ __('Permanents') }}</span>
-                                <span class="font-medium">{{ $stats['permanent_members_count'] }} ({{ round($stats['permanent_members_count'] / $stats['members_count'] * 100, 1) }}%)</span>
-                            </div>
-                            <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-600 h-2 rounded-full" style="width: {{ $stats['permanent_members_count'] / $stats['members_count'] * 100 }}%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">{{ __('Invités') }}</span>
-                                <span class="font-medium">{{ $stats['invite_members_count'] }} ({{ round($stats['invite_members_count'] / $stats['members_count'] * 100, 1) }}%)</span>
-                            </div>
-                            <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-orange-600 h-2 rounded-full" style="width: {{ $stats['invite_members_count'] / $stats['members_count'] * 100 }}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-          
-                               
-            <!-- Dernier culte -->
+    <!-- Dernier culte -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <div class="text-lg font-bold text-gray-600">
                     @if($stats['last_culte'])

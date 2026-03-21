@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Flasher\Toastr\Prime\ToastrInterface;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MemberController extends Controller
 {
@@ -18,8 +19,12 @@ class MemberController extends Controller
 
     public function index()
     {
-        $members = Member::with('category')->paginate(20);
-        return view('members.index', compact('members'));
+        $permanents = Member::with('category')->where('type', 'permanent')->paginate(20);
+        $invites = Member::with('category')->where('type', 'invite')->paginate(20);
+        $permanentsCount = Member::where('type', 'permanent')->count();
+        $invitesCount = Member::where('type', 'invite')->count();
+        
+        return view('members.index', compact('permanents', 'invites', 'permanentsCount', 'invitesCount'));
     }
 
     public function create()
@@ -34,9 +39,16 @@ class MemberController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'phone' => 'nullable|string|max:20',
+            'lieu_habitation' => 'nullable|string|max:255',
+            'anniversaire_jour_mois' => ['nullable', 'regex:/^\d{2}\/\d{2}$/'],
         ]);
+
+        if (($validated['type'] ?? null) !== 'permanent') {
+            $validated['lieu_habitation'] = null;
+            $validated['anniversaire_jour_mois'] = null;
+        }
 
         $member = Member::create($validated);
 
@@ -53,7 +65,14 @@ class MemberController extends Controller
             'type' => 'required|in:permanent,invite',
             'category_id' => 'required|exists:categories,id',
             'phone' => 'nullable|string|max:20',
+            'lieu_habitation' => 'required_if:type,permanent|nullable|string|max:255',
+            'anniversaire_jour_mois' => ['required_if:type,permanent', 'nullable', 'regex:/^\d{2}\/\d{2}$/'],
         ]);
+
+        if (($validated['type'] ?? null) !== 'permanent') {
+            $validated['lieu_habitation'] = null;
+            $validated['anniversaire_jour_mois'] = null;
+        }
 
         $member = Member::create($validated);
 
@@ -79,9 +98,16 @@ class MemberController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'phone' => 'nullable|string|max:20',
+            'lieu_habitation' => 'nullable|string|max:255',
+            'anniversaire_jour_mois' => ['nullable', 'regex:/^\d{2}\/\d{2}$/'],
         ]);
+
+        if (($validated['type'] ?? null) !== 'permanent') {
+            $validated['lieu_habitation'] = null;
+            $validated['anniversaire_jour_mois'] = null;
+        }
 
         $member->update($validated);
 
@@ -95,5 +121,31 @@ class MemberController extends Controller
         $member->delete();
         $this->toastr->success('Membre supprimé avec succès !');
         return redirect()->route('members.index');
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $type = $request->get('type', 'permanents');
+        
+        $members = Member::with('category')
+            ->where('type', $type === 'invites' ? 'invite' : 'permanent')
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
+
+        $title = $type === 'invites' ? 'Liste des Invités' : 'Liste des Membres Permanents';
+        
+        $data = [
+            'title' => $title,
+            'members' => $members,
+            'type' => $type,
+            'exported_at' => now()->format('d/m/Y à H:i')
+        ];
+
+        $pdf = Pdf::loadView('members.pdf', $data);
+        
+        $filename = $type === 'invites' ? 'invites-' . now()->format('Y-m-d') : 'permanents-' . now()->format('Y-m-d');
+        
+        return $pdf->download($filename . '.pdf');
     }
 }

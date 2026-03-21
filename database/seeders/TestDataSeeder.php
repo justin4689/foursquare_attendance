@@ -13,7 +13,38 @@ class TestDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // Créer des catégories
+        // Données prédéfinies pour les noms et prénoms
+        $firstNames = ['Jean', 'Marie', 'Pierre', 'Sophie', 'Paul', 'Isabelle', 'Michel', 'Catherine', 'David', 'Françoise', 
+                      'Jacques', 'Nathalie', 'Philippe', 'Monique', 'Étienne', 'Anne', 'Bernard', 'Christine', 'Alain', 'Sylvie',
+                      'Robert', 'Martine', 'Daniel', 'Brigitte', 'Claude', 'Nicole', 'Patrick', 'Valérie', 'Christian', 'Sandra',
+                      'Stéphane', 'Laurence', 'Olivier', 'Céline', 'Thierry', 'Nathalie', 'Frédéric', 'Émilie', 'Marc', 'Aurélie',
+                      'Laurent', 'Caroline', 'David', 'Julie', 'Sébastien', 'Marion', 'Nicolas', 'Camille', 'Alexandre', 'Léa',
+                      'Thomas', 'Manon', 'Antoine', 'Charlotte', 'Julien', 'Laura', 'Guillaume', 'Emma', 'Lucas', 'Chloé',
+                      'Gérard', 'Josiane', 'René', 'Simone', 'André', 'Raymonde', 'Roger', 'Yvonne', 'Marcel', 'Gisèle',
+                      'Louis', 'Marguerite', 'Henri', 'Thérèse', 'Paul', 'Denise', 'Charles', 'Monique', 'Joseph', 'Catherine',
+                      'Georges', 'Françoise', 'Raymond', 'Jacqueline', 'Émile', 'Suzanne', 'Albert', 'Renée', 'Joseph', 'Yvette',
+                      'Victor', 'Marcelle', 'Léon', 'Paulette', 'Gaston', 'Lucienne', 'Fernand', 'Odette', 'Marcel', 'Henriette',
+                      'Arthur', 'Alice', 'Louis', 'Rose', 'Gustave', 'Eugénie', 'Ernest', 'Berthe', 'Adrien', 'Cécile',
+                      'Eugène', 'Marguerite', 'Hector', 'Adèle', 'Célestin', 'Léontine', 'Alphonse', 'Victoire', 'Théophile', 'Irène'];
+
+        $lastNames = ['Martin', 'Bernard', 'Dubois', 'Thomas', 'Robert', 'Richard', 'Petit', 'Durand', 'Leroy', 'Moreau',
+                     'Simon', 'Laurent', 'Lefebvre', 'Michel', 'Garcia', 'David', 'Bertrand', 'Roux', 'Vincent', 'Fournier',
+                     'Morel', 'Fernandez', 'Girard', 'Bonnet', 'Dupont', 'Lambert', 'Fontaine', 'Rousseau', 'Muller', 'Lefevre',
+                     'Faure', 'André', 'Gauthier', 'Arnaud', 'Perrin', 'Colin', 'Bernard', 'Carpentier', 'Sanchez', 'Gérard',
+                     'Chevalier', 'Marty', 'Benoît', 'Robin', 'Olivier', 'Lévy', 'Barbier', 'Gaillard', 'Joly', 'Marie',
+                     'Caron', 'Aubert', 'Nicolas', 'Pierre', 'Boulanger', 'Roy', 'Leclerc', 'Mallet', 'Humbert', 'Renaud',
+                     'Vidal', 'Leclercq', 'Poirier', 'Mathieu', 'Adam', 'Berger', 'Lemoine', 'Philippe', 'Briand', 'Schneider',
+                     'Guerin', 'Pichon', 'Marchand', 'Julien', 'Rivière', 'Carlier', 'Denis', 'Dubois', 'Renault', 'Coulon',
+                     'Guillot', 'Marty', 'Blanc', 'Gautier', 'Marty', 'Marty', 'Marty', 'Marty', 'Marty', 'Marty'];
+
+        $phonePrefixes = ['01', '02', '03', '04', '05', '06', '07'];
+
+        $lieuxHabitation = [
+            'Abidjan', 'Yopougon', 'Cocody', 'Bingerville', 'Plateau', 'Treichville', 'Marcory', 'Koumassi',
+            'Adjame', 'Angré', 'Riviera', 'Port-Bouët', 'Anyama', 'Songon', 'Dabou'
+        ];
+
+        // Récupérer ou créer les catégories
         $categories = [
             ['name' => 'Enfant', 'description' => 'Moins de 13 ans'],
             ['name' => 'Jeune', 'description' => '13 à 25 ans'],
@@ -21,100 +52,97 @@ class TestDataSeeder extends Seeder
             ['name' => 'Femme', 'description' => 'Femmes adultes'],
         ];
 
+        $categoryIds = [];
         foreach ($categories as $category) {
-            Category::firstOrCreate(['name' => $category['name']], $category);
+            $cat = Category::firstOrCreate(['name' => $category['name']], $category);
+            $categoryIds[] = $cat->id;
         }
 
-        // Créer des membres
-        $members = [
-            ['first_name' => 'Jean', 'last_name' => 'Dupont', 'type' => 'permanent', 'phone' => '0123456789', 'category_id' => 1],
-            ['first_name' => 'Marie', 'last_name' => 'Martin', 'type' => 'permanent', 'phone' => '0234567890', 'category_id' => 2],
-            ['first_name' => 'Pierre', 'last_name' => 'Durand', 'type' => 'permanent', 'phone' => '0345678901', 'category_id' => 3],
-            ['first_name' => 'Sophie', 'last_name' => 'Lefebvre', 'type' => 'invite', 'phone' => '0456789012', 'category_id' => 3],
-            ['first_name' => 'Paul', 'last_name' => 'Bernard', 'type' => 'permanent', 'phone' => '0567890123', 'category_id' => 4],
-            ['first_name' => 'Isabelle', 'last_name' => 'Robert', 'type' => 'permanent', 'phone' => '0678901234', 'category_id' => 4],
-            ['first_name' => 'Michel', 'last_name' => 'Richard', 'type' => 'invite', 'phone' => '0789012345', 'category_id' => 1],
-            ['first_name' => 'Catherine', 'last_name' => 'Petit', 'type' => 'permanent', 'phone' => '0890123456', 'category_id' => 2],
-            ['first_name' => 'David', 'last_name' => 'Dubois', 'type' => 'permanent', 'phone' => '0901234567', 'category_id' => 3],
-            ['first_name' => 'Françoise', 'last_name' => 'Laurent', 'type' => 'invite', 'phone' => '0123456780', 'category_id' => 3],
-            ['first_name' => 'Jacques', 'last_name' => 'Simon', 'type' => 'permanent', 'phone' => '0234567891', 'category_id' => 4],
-            ['first_name' => 'Nathalie', 'last_name' => 'Michel', 'type' => 'permanent', 'phone' => '0345678902', 'category_id' => 2],
-            ['first_name' => 'Philippe', 'last_name' => 'Garcia', 'type' => 'invite', 'phone' => '0456789013', 'category_id' => 1],
-            ['first_name' => 'Monique', 'last_name' => 'Rousseau', 'type' => 'permanent', 'phone' => '0567890124', 'category_id' => 2],
-            ['first_name' => 'Étienne', 'last_name' => 'Fournier', 'type' => 'invite', 'phone' => '0678901235', 'category_id' => 3],
-        ];
-
-        foreach ($members as $member) {
-            Member::create($member);
+        // Créer 150 membres permanents
+        $this->command->info('Création de 150 membres permanents...');
+        for ($i = 0; $i < 150; $i++) {
+            Member::create([
+                'first_name' => $firstNames[array_rand($firstNames)],
+                'last_name' => $lastNames[array_rand($lastNames)],
+                'type' => 'permanent',
+                'phone' => (rand(0, 4) < 4) ? $phonePrefixes[array_rand($phonePrefixes)] . rand(10000000, 99999999) : null,
+                'category_id' => $categoryIds[array_rand($categoryIds)],
+                'lieu_habitation' => (rand(0, 4) < 4) ? $lieuxHabitation[array_rand($lieuxHabitation)] : null,
+                'anniversaire_jour_mois' => (rand(0, 4) < 3) ? str_pad((string) rand(1, 28), 2, '0', STR_PAD_LEFT) . '/' . str_pad((string) rand(1, 12), 2, '0', STR_PAD_LEFT) : null,
+            ]);
         }
 
-        // Créer des cultes avec horaires réalistes
-        $cultes = [
-            [
-                'name' => 'Culte de Matin',
-                'date' => Carbon::today()->subDays(14), // Il y a 2 semaines
-                'heure' => '08:00',
-                'fin' => '10:00'
-            ],
-            [
-                'name' => 'Culte de Midi',
-                'date' => Carbon::today()->subDays(14),
-                'heure' => '11:00',
-                'fin' => '13:00'
-            ],
-            [
-                'name' => 'Culte Dominical',
-                'date' => Carbon::today()->subDays(7), // La semaine dernière
-                'heure' => '09:00',
-                'fin' => '11:30'
-            ],
-            [
-                'name' => 'Culte de Soir',
-                'date' => Carbon::today()->subDays(3), // Il y a 3 jours
-                'heure' => '16:00',
-                'fin' => '18:00'
-            ],
-            [
-                'name' => 'Culte Spécial',
-                'date' => Carbon::today()->addDays(2), // Dans 2 jours
-                'heure' => '19:00',
-                'fin' => '21:00'
-            ],
-            [
-                'name' => 'Culte de Matin',
-                'date' => Carbon::today()->addDays(7), // La semaine prochaine
-                'heure' => '08:00',
-                'fin' => '10:00'
-            ],
-            [
-                'name' => 'Culte Dominical',
-                'date' => Carbon::today()->addDays(7),
-                'heure' => '09:00',
-                'fin' => '11:30'
-            ],
-            [
-                'name' => 'Culte de Jeûne',
-                'date' => Carbon::today()->addDays(10), // Dans 10 jours
-                'heure' => '18:00',
-                'fin' => '20:00'
-            ],
+        // Créer 39 invités
+        $this->command->info('Création de 39 invités...');
+        for ($i = 0; $i < 39; $i++) {
+            Member::create([
+                'first_name' => $firstNames[array_rand($firstNames)],
+                'last_name' => $lastNames[array_rand($lastNames)],
+                'type' => 'invite',
+                'phone' => (rand(0, 4) < 3) ? $phonePrefixes[array_rand($phonePrefixes)] . rand(10000000, 99999999) : null,
+                'category_id' => $categoryIds[array_rand($categoryIds)],
+            ]);
+        }
+
+        // Créer 40 cultes étalés sur 2 mois
+        $this->command->info('Création de 40 cultes...');
+        $culteNames = [
+            'Culte Dominical', 'Culte de Matin', 'Culte de Midi', 'Culte de Soir',
+            'Culte de Louange', 'Culte de Prière', 'Culte d\'Action de Grâce',
+            'Culte de Noël', 'Culte de Pâques', 'Culte de Pentecôte',
+            'Culte Spécial Jeunes', 'Culte des Enfants', 'Culte des Hommes',
+            'Culte des Femmes', 'Culte Familial', 'Culte d\'Adoration',
+            'Culte d\'Évangélisation', 'Culte de Guérison', 'Culte de Délivrance',
+            'Culte de Jeûne et Prière', 'Culte de Réveil', 'Culte Missionnaire',
+            'Culte d\'Intercession', 'Culte de Thanksgiving', 'Culte de Victoire',
+            'Culte de Bénédiction', 'Culte de Paix', 'Culte de Joie',
+            'Culte d\'Espérance', 'Culte de Foi', 'Culte d\'Amour',
+            'Culte de Grâce', 'Culte de Miséricorde', 'Culte de Réconciliation',
+            'Culte de Libération', 'Culte de Restauration', 'Culte de Transformation',
+            'Culte de Consécration', 'Culte de Dévouement', 'Culte de Service',
+            'Culte d\'Unité', 'Culte de Communion', 'Culte de Célébration'
         ];
 
-        foreach ($cultes as $culte) {
-            Culte::create($culte);
+        $heures = ['08:00', '09:00', '10:00', '11:00', '14:00', '16:00', '18:00', '19:00', '20:00'];
+
+        for ($i = 0; $i < 40; $i++) {
+            $date = Carbon::today()->subDays(rand(60, 1))->addDays(rand(0, 90));
+            $heure = $heures[array_rand($heures)];
+            $fin = Carbon::createFromTimeString($heure)->addHours(rand(1, 3))->format('H:i');
+
+            Culte::create([
+                'name' => $culteNames[array_rand($culteNames)],
+                'date' => $date,
+                'heure' => $heure,
+                'fin' => $fin,
+            ]);
         }
 
         // Créer des présences pour les cultes passés
         $cultesPasses = Culte::where('date', '<=', Carbon::today())->get();
-        $members = Member::all();
+        $allMembers = Member::all();
+        
+        $this->command->info('Création des présences pour ' . $cultesPasses->count() . ' cultes passés...');
         
         foreach ($cultesPasses as $culte) {
-            // Simuler 70-90% de présence
-            $nombrePresences = intval($members->count() * (0.7 + rand(0, 20) / 100));
-            $membresPresences = $members->random($nombrePresences);
+            // Pour les permanents: 75-95% de présence
+            $permanents = $allMembers->where('type', 'permanent');
+            $nombrePresencesPermanents = intval($permanents->count() * (0.75 + rand(0, 20) / 100));
+            $permanentsPresences = $permanents->random($nombrePresencesPermanents);
 
-            foreach ($members as $member) {
-                $status = $membresPresences->contains($member);
+            // Pour les invités: 40-70% de présence (moins réguliers)
+            $invites = $allMembers->where('type', 'invite');
+            $nombrePresencesInvites = intval($invites->count() * (0.40 + rand(0, 30) / 100));
+            $invitesPresences = $invites->random(min($nombrePresencesInvites, $invites->count()));
+
+            foreach ($allMembers as $member) {
+                $status = false;
+                if ($member->type === 'permanent') {
+                    $status = $permanentsPresences->contains($member);
+                } else {
+                    $status = $invitesPresences->contains($member);
+                }
+
                 Attendance::create([
                     'culte_id' => $culte->id,
                     'member_id' => $member->id,
@@ -123,6 +151,10 @@ class TestDataSeeder extends Seeder
             }
         }
 
-        $this->command->info('Données de test créées : ' . $members->count() . ' membres, ' . count($cultes) . ' cultes avec présences.');
+        $this->command->info('Données de test créées avec succès :');
+        $this->command->info('- ' . $allMembers->where('type', 'permanent')->count() . ' membres permanents');
+        $this->command->info('- ' . $allMembers->where('type', 'invite')->count() . ' invités');
+        $this->command->info('- ' . Culte::count() . ' cultes');
+        $this->command->info('- ' . Attendance::count() . ' enregistrements de présence');
     }
 }

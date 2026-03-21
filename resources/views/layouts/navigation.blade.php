@@ -31,6 +31,13 @@
                     <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
                         {{ __('Catégories') }}
                     </x-nav-link>
+                    
+                    @if(auth()->user()->isAdmin())
+                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                        {{ __('Utilisateurs') }}
+                    </x-nav-link>
+                    @endif
+                    
                     <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                         {{ __('Profile') }}
                     </x-nav-link>
@@ -59,15 +66,13 @@
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Deconnexion') }}
-                            </x-dropdown-link>
                         </form>
+
+                        <x-dropdown-link href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            {{ __('Deconnexion') }}
+                        </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -105,15 +110,13 @@
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" id="logout-form-mobile">
                     @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Deconnexion') }}
-                    </x-responsive-nav-link>
                 </form>
+
+                <x-responsive-nav-link href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+                    {{ __('Deconnexion') }}
+                </x-responsive-nav-link>
             </div>
         </div>
     </div>
