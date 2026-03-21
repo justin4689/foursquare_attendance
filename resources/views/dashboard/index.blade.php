@@ -7,6 +7,40 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <!-- Anniversaires du jour -->
+            @if($birthdayMembers->count() > 0)
+                <div class="bg-gradient-to-r from-yellow-50 to-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="text-2xl mr-3">🎉</div>
+                        <h3 class="text-lg font-semibold text-pink-800">
+                            {{ __('Anniversaires du jour') }}
+                        </h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($birthdayMembers as $member)
+                            <div class="bg-white rounded-lg p-4 border border-pink-100 shadow-sm">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900">
+                                            {{ $member->first_name }} {{ $member->last_name }}
+                                        </div>
+                                        @if($member->phone)
+                                            <div class="text-sm text-gray-600 mt-1">
+                                                📱 {{ $member->phone }}
+                                            </div>
+                                        @endif
+                                        <div class="text-sm text-pink-600 mt-2 font-medium">
+                                            {{ __(" C'est son anniversaire !") }} 🎂
+                                        </div>
+                                    </div>
+                                    <div class="text-2xl ml-3">🎈</div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                

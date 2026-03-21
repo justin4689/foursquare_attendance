@@ -17,14 +17,34 @@ class MemberController extends Controller
         $this->toastr = $toastr;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $permanents = Member::with('category')->where('type', 'permanent')->paginate(20);
-        $invites = Member::with('category')->where('type', 'invite')->paginate(20);
+        $search = $request->get('search', '');
+        
+        $permanentsQuery = Member::with('category')->where('type', 'permanent');
+        $invitesQuery = Member::with('category')->where('type', 'invite');
+        
+        if (!empty($search)) {
+            $searchTerm = '%' . $search . '%';
+            $permanentsQuery->where(function($q) use ($searchTerm) {
+                $q->where('first_name', 'like', $searchTerm)
+                  ->orWhere('last_name', 'like', $searchTerm)
+                  ->orWhere('phone', 'like', $searchTerm);
+            });
+            
+            $invitesQuery->where(function($q) use ($searchTerm) {
+                $q->where('first_name', 'like', $searchTerm)
+                  ->orWhere('last_name', 'like', $searchTerm)
+                  ->orWhere('phone', 'like', $searchTerm);
+            });
+        }
+        
+        $permanents = $permanentsQuery->paginate(20);
+        $invites = $invitesQuery->paginate(20);
         $permanentsCount = Member::where('type', 'permanent')->count();
         $invitesCount = Member::where('type', 'invite')->count();
         
-        return view('members.index', compact('permanents', 'invites', 'permanentsCount', 'invitesCount'));
+        return view('members.index', compact('permanents', 'invites', 'permanentsCount', 'invitesCount', 'search'));
     }
 
     public function create()

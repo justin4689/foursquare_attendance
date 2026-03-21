@@ -20,6 +20,32 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Champ de recherche -->
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4">
+                <div class="p-4">
+                    <form method="GET" action="{{ route('members.index') }}" class="flex gap-3">
+                        <div class="flex-1 relative">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ request()->get('search', '') }}" 
+                                   placeholder="{{ __('Rechercher par nom, prénom ou téléphone...') }}" 
+                                   class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   id="search-input">
+                            @if(request()->get('search'))
+                                <a href="{{ route('members.index') }}" 
+                                   class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-xl font-bold leading-none"
+                                   title="{{ __('Effacer la recherche') }}">
+                                    ×
+                                </a>
+                            @endif
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md">
+                            {{ __('Rechercher') }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
             <!-- Tabs -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="border-b border-gray-200">
@@ -153,5 +179,36 @@
             const url = `{{ route('members.export.pdf') }}?type=${currentTab}`;
             window.open(url, '_blank');
         }
+        
+        // Fonction de recherche automatique
+        function performSearch() {
+            const searchInput = document.getElementById('search-input');
+            const form = searchInput.closest('form');
+            
+            // Créer une nouvelle URL avec les paramètres actuels
+            const url = new URL(form.action);
+            url.searchParams.set('search', searchInput.value);
+            
+            // Rediriger vers la nouvelle URL
+            window.location.href = url.toString();
+        }
+        
+        // Écouter les changements dans le champ de recherche avec délai
+        let searchTimeout;
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, 500); // Attendre 500ms après la fin de la frappe
+        });
+        
+        // Écouter la touche Entrée pour recherche immédiate
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                performSearch();
+            }
+        });
     </script>
 </x-app-layout>

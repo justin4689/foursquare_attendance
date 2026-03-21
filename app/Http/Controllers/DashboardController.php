@@ -34,6 +34,13 @@ class DashboardController extends Controller
             'last_culte' => $lastCultePasse,
         ];
 
+        // Récupérer les membres dont c'est l'anniversaire aujourd'hui
+        $today = now()->format('d/m');
+        $birthdayMembers = Member::where('type', 'permanent')
+            ->whereNotNull('anniversaire_jour_mois')
+            ->where('anniversaire_jour_mois', $today)
+            ->get();
+
         $recentCultes = Culte::withCount('attendances')
             ->where(function ($query) use ($now) {
                 $query->whereDate('date', '<', $now->toDateString())
@@ -48,6 +55,6 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboard.index', compact('stats', 'recentCultes'));
+        return view('dashboard.index', compact('stats', 'recentCultes', 'birthdayMembers'));
     }
 }
