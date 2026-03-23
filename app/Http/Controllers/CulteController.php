@@ -119,20 +119,35 @@ class CulteController extends Controller
 
     public function destroy(Culte $culte)
     {
-        if (in_array($culte->statut, ['en_cours', 'passé'])) {
-            $this->toastr->error('Impossible de supprimer : ce culte est en cours ou déjà passé.');
+        if (in_array($culte->statut, ['en_cours'])) {
+            $this->toastr->error('Impossible de supprimer : ce culte est en cours.');
             return redirect()->route('cultes.index');
         }
 
+        $attendancesCount = $culte->attendances()->count();
+        $culteName = $culte->name;
+        
+        if ($attendancesCount > 0) {
+            // Supprimer d'abord les présences
+            $culte->attendances()->delete();
+        }
+        
+        // Puis supprimer le culte
         $culte->delete();
-        $this->toastr->success('Culte supprimé avec succès !');
+        
+        if ($attendancesCount > 0) {
+            $this->toastr->success("Le culte '{$culteName}' et ses {$attendancesCount} présence(s) ont été supprimés avec succès !");
+        } else {
+            $this->toastr->success("Le culte '{$culteName}' a été supprimé avec succès !");
+        }
+        
         return redirect()->route('cultes.index');
     }
 
     public function pointage(Culte $culte)
     {
         // Vérifier si le culte est disponible pour le pointage
-        if ($culte->date->isPast()) {
+        if ($culte->date->lt(now()->startOfDay())) {
             $this->toastr->error('Ce culte est déjà passé, impossible de pointer.');
             return redirect()->route('cultes.index');
         }

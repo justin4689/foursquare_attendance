@@ -84,7 +84,13 @@
                                                 <a class="text-gray-600 hover:text-gray-800 underline" href="{{ route('cultes.show', $culte) }}">{{ __('Voir') }}</a>
                                                 @if(!in_array($culte->statut, ['en_cours', 'passé']))
                                                     <a class="text-gray-600 hover:text-gray-800 underline" href="{{ route('cultes.edit', $culte) }}">{{ __('Modifier') }}</a>
-                                               
+                                                @endif
+                                                @if(!in_array($culte->statut, ['en_cours']))
+                                                    <form action="{{ route('cultes.destroy', $culte) }}" method="POST" class="inline" onsubmit="return confirmDeleteCulte('{{ $culte->name }}', {{ $culte->attendances()->count() }})">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="underline">{{ __('Supprimer') }}</button>
+                                                    </form>
                                                 @endif
                                             </div>
                                         </td>
@@ -107,4 +113,15 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Fonction de confirmation de suppression de culte
+        function confirmDeleteCulte(culteName, attendancesCount) {
+            if (attendancesCount > 0) {
+                return confirm(`ATTENTION : Ce culte a ${attendancesCount} enregistrement(s) de présence !\n\nÊtes-vous sûr de vouloir supprimer le culte "${culteName}" ET TOUTES ses présences ?\n\nCette action est irréversible.`);
+            } else {
+                return confirm(`Êtes-vous sûr de vouloir supprimer le culte "${culteName}" ?\n\nCette action est irréversible.`);
+            }
+        }
+    </script>
 </x-app-layout>

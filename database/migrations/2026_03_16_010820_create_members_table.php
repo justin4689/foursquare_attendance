@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories')->cascadeOnDelete();
             $table->string('lieu_habitation')->nullable();
             $table->string('anniversaire_jour_mois', 5)->nullable();
-            $table->string('phone')->nullable();
+            $table->string('phone')->nullable()->unique();
             $table->timestamps();
         });
     }

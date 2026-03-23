@@ -83,6 +83,12 @@
                                             <a class="underline" href="{{ route('members.show', $member) }}">{{ __('Voir') }}</a>
                                             <span class="mx-1">|</span>
                                             <a class="underline" href="{{ route('members.edit', $member) }}">{{ __('Modifier') }}</a>
+                                            <span class="mx-1">|</span>
+                                            <form action="{{ route('members.destroy', $member) }}" method="POST" class="inline" onsubmit="return confirmDeleteMember('{{ $member->first_name }} {{ $member->last_name }}', {{ $member->attendances()->count() }})">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="underline ">{{ __('Supprimer') }}</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
@@ -126,6 +132,12 @@
                                             <a class="underline" href="{{ route('members.show', $member) }}">{{ __('Voir') }}</a>
                                             <span class="mx-1">|</span>
                                             <a class="underline" href="{{ route('members.edit', $member) }}">{{ __('Modifier') }}</a>
+                                             <span class="mx-1">|</span>
+                                            <form action="{{ route('members.destroy', $member) }}" method="POST" class="inline" onsubmit="return confirmDeleteMember('{{ $member->first_name }} {{ $member->last_name }}', {{ $member->attendances()->count() }})">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="underline ">{{ __('Supprimer') }}</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
@@ -210,5 +222,14 @@
                 performSearch();
             }
         });
+        
+        // Fonction de confirmation de suppression de membre
+        function confirmDeleteMember(memberName, attendancesCount) {
+            if (attendancesCount > 0) {
+                return confirm(`ATTENTION : Ce membre a ${attendancesCount} enregistrement(s) de présence !\n\nÊtes-vous sûr de vouloir supprimer le membre "${memberName}" ET TOUTES ses présences ?\n\nCette action est irréversible.`);
+            } else {
+                return confirm(`Êtes-vous sûr de vouloir supprimer le membre "${memberName}" ?\n\nCette action est irréversible.`);
+            }
+        }
     </script>
 </x-app-layout>

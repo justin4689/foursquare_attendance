@@ -60,9 +60,13 @@ class MemberController extends Controller
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
             'category_id' => 'nullable|exists:categories,id',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|unique:members,phone',
             'lieu_habitation' => 'nullable|string|max:255',
             'anniversaire_jour_mois' => ['nullable', 'regex:/^\d{2}\/\d{2}$/'],
+        ], [
+            'phone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre membre.',
+            'phone.regex' => 'Le format du numéro de téléphone est invalide.',
+            'anniversaire_jour_mois.regex' => 'L\'anniversaire doit être au format JJ/MM (ex: 15/04).',
         ]);
 
         if (($validated['type'] ?? null) !== 'permanent') {
@@ -84,9 +88,12 @@ class MemberController extends Controller
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
             'category_id' => 'required|exists:categories,id',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|unique:members,phone',
             'lieu_habitation' => 'required_if:type,permanent|nullable|string|max:255',
             'anniversaire_jour_mois' => ['required_if:type,permanent', 'nullable', 'regex:/^\d{2}\/\d{2}$/'],
+        ], [
+            'phone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre membre.',
+            'anniversaire_jour_mois.regex' => 'L\'anniversaire doit être au format JJ/MM (ex: 15/04).',
         ]);
 
         if (($validated['type'] ?? null) !== 'permanent') {
@@ -119,9 +126,12 @@ class MemberController extends Controller
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
             'category_id' => 'nullable|exists:categories,id',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|unique:members,phone,' . $member->id,
             'lieu_habitation' => 'nullable|string|max:255',
             'anniversaire_jour_mois' => ['nullable', 'regex:/^\d{2}\/\d{2}$/'],
+        ], [
+            'phone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre membre.',
+            'anniversaire_jour_mois.regex' => 'L\'anniversaire doit être au format JJ/MM (ex: 15/04).',
         ]);
 
         if (($validated['type'] ?? null) !== 'permanent') {
@@ -138,8 +148,23 @@ class MemberController extends Controller
 
     public function destroy(Member $member)
     {
-        $member->delete();
-        $this->toastr->success('Membre supprimé avec succès !');
+        $attendancesCount = $member->attendances()->count();
+        $memberName = "{$member->first_name} {$member->last_name}";
+        
+        if ($attendancesCount > 0) {
+            // Supprimer d'abord les présences
+            $member->attendances()->delete();
+            // Puis supprimer le membre
+            $member->delete();
+            
+            $this->toastr->success("Le membre {$memberName} et ses {$attendancesCount} présence(s) ont été supprimés avec succès !");
+        } else {
+            // Supprimer le membre sans présences
+            $member->delete();
+            
+            $this->toastr->success("Le membre {$memberName} a été supprimé avec succès !");
+        }
+        
         return redirect()->route('members.index');
     }
 
