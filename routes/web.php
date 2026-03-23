@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('cultes/{culte}/presence', [CulteController::class, 'editPresence'])->name('cultes.presence.edit');
     Route::post('cultes/{culte}/presence', [CulteController::class, 'updatePresence'])->name('cultes.presence.update');
     Route::get('cultes/{culte}/pdf', [CulteController::class, 'generatePDF'])->name('cultes.pdf');
+    Route::get('cultes/{culte}/pdf/jour', [CulteController::class, 'generateDailyPDF'])->name('cultes.pdf.day');
 });
 
 require __DIR__.'/auth.php';

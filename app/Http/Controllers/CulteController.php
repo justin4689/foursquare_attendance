@@ -54,6 +54,14 @@ class CulteController extends Controller
             $this->finaliserAbsentsSiCultePasse($culte);
         }
 
+        $firstCulteOfDay = Culte::query()
+            ->whereDate('date', $culte->date)
+            ->orderBy('heure', 'asc')
+            ->orderBy('id', 'asc')
+            ->first();
+
+        $isFirstCulteOfDay = ($firstCulteOfDay?->id ?? null) === $culte->id;
+
         $attendances = $culte->attendances()->with('member.category')->get();
         $present = $attendances->where('status', true);
         $absent = $attendances->where('status', false)->filter(fn($a) => $a->member->type === 'permanent');
@@ -61,7 +69,7 @@ class CulteController extends Controller
         $statsByCategory = $present->groupBy(fn($a) => $a->member->category->name ?? 'NC')->map->count();
         $presentGuests = $present->filter(fn($a) => $a->member->type === 'invite');
 
-        return view('cultes.show', compact('culte', 'present', 'absent', 'statsByCategory', 'presentGuests'));
+        return view('cultes.show', compact('culte', 'present', 'absent', 'statsByCategory', 'presentGuests', 'isFirstCulteOfDay'));
     }
 
     private function finaliserAbsentsSiCultePasse(Culte $culte): void
@@ -192,6 +200,22 @@ class CulteController extends Controller
         $attendances = $culte->attendances()->with('member.category')->get();
         $present = $attendances->where('status', true);
         $absent = $attendances->where('status', false)->filter(fn($a) => $a->member->type === 'permanent');
+
+        $dayCulteIds = Culte::query()
+            ->whereDate('date', $culte->date)
+            ->pluck('id');
+
+        $presentMemberIdsToday = Attendance::query()
+            ->whereIn('culte_id', $dayCulteIds)
+            ->where('status', true)
+            ->pluck('member_id')
+            ->unique()
+            ->all();
+
+        $presentInDayByMemberId = $absent
+            ->mapWithKeys(fn($a) => [$a->member_id => in_array($a->member_id, $presentMemberIdsToday, true)])
+            ->all();
+
         $statsByCategory = $present->groupBy(fn($a) => $a->member->category->name ?? 'NC')->map->count();
         $presentGuests = $present->filter(fn($a) => $a->member->type === 'invite');
 
@@ -199,6 +223,7 @@ class CulteController extends Controller
             'culte' => $culte,
             'present' => $present,
             'absent' => $absent,
+            'presentInDayByMemberId' => $presentInDayByMemberId,
             'statsByCategory' => $statsByCategory,
             'totalPresent' => $present->count(),
             'totalAbsent' => $absent->count(),
@@ -209,5 +234,67 @@ class CulteController extends Controller
         $pdf = PDF::loadView('cultes.pdf', $data);
         
         return $pdf->download("rapport-culte-{$culte->id}.pdf");
+    }
+
+    public function generateDailyPDF(Culte $culte)
+    {
+        $dayCultes = Culte::query()
+            ->whereDate('date', $culte->date)
+            ->orderBy('heure', 'asc')
+            ->get();
+
+        $dayCulteIds = $dayCultes->pluck('id');
+
+        $attendances = Attendance::query()
+            ->whereIn('culte_id', $dayCulteIds)
+            ->with('member.category')
+            ->get();
+
+        $presentMemberIds = $attendances
+            ->where('status', true)
+            ->pluck('member_id')
+            ->unique();
+
+        $members = Member::with('category')->get();
+
+        $presentMembers = $members
+            ->filter(fn($m) => $presentMemberIds->contains($m->id));
+
+        $presentPermanentMembers = $presentMembers
+            ->filter(fn($m) => $m->type === 'permanent')
+            ->values();
+
+        $presentGuestMembers = $presentMembers
+            ->filter(fn($m) => $m->type === 'invite')
+            ->values();
+
+        $absentMembers = $members
+            ->filter(fn($m) => $m->type === 'permanent')
+            ->filter(fn($m) => !$presentMemberIds->contains($m->id));
+
+        $statsByCategory = $presentMembers
+            ->filter(fn($m) => $m->type === 'permanent')
+            ->groupBy(fn($m) => $m->category->name ?? 'NC')
+            ->map(fn($g) => $g->count());
+
+        $totalGuests = $presentGuestMembers->count();
+
+        $data = [
+            'date' => $culte->date,
+            'cultes' => $dayCultes,
+            'presentMembers' => $presentMembers,
+            'presentPermanentMembers' => $presentPermanentMembers,
+            'presentGuestMembers' => $presentGuestMembers,
+            'absentMembers' => $absentMembers,
+            'statsByCategory' => $statsByCategory,
+            'totalPresent' => $presentMembers->count(),
+            'totalAbsent' => $absentMembers->count(),
+            'totalGuests' => $totalGuests,
+        ];
+
+        $pdf = PDF::loadView('cultes.pdf-journalier', $data);
+
+        $dateStr = ($culte->date?->format('Y-m-d')) ?? \Carbon\Carbon::parse($culte->date)->format('Y-m-d');
+        return $pdf->download("rapport-journalier-{$dateStr}.pdf");
     }
 }

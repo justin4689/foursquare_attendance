@@ -22,6 +22,14 @@
                         {{ __('Exporter en PDF') }}
                     </x-primary-button>
                 </a>
+
+                @if($isFirstCulteOfDay)
+                <a href="{{ route('cultes.pdf.day', $culte) }}">
+                    <x-primary-button type="button" class="bg-green-600 hover:bg-green-700 focus:bg-green-700" style="background-color: rgb(34 197 94) !important; outline-color: rgb(34 197 94) !important;">
+                        {{ __('Rapport journalier PDF') }}
+                    </x-primary-button>
+                </a>
+                @endif
                 </div>
             @endif
 

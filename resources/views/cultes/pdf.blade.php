@@ -180,6 +180,7 @@
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Catégorie</th>
+                    <th>Présent dans la journée</th>
                     <th>Contact</th>
                     <th>Type</th>
                 </tr>
@@ -191,6 +192,13 @@
                     <td>{{ $attendance->member->last_name ?? 'NC' }}</td>
                     <td>{{ $attendance->member->first_name ?? 'NC' }}</td>
                     <td>{{ $attendance->member->category->name ?? 'NC' }}</td>
+                    <td>
+                        @if(($presentInDayByMemberId[$attendance->member_id] ?? false) === true)
+                            Oui
+                        @else
+                            Non
+                        @endif
+                    </td>
                     <td>{{ $attendance->member->phone ?? 'NC' }}</td>
                     <td>{{ $attendance->member->type ?? 'NC' }}</td>
                 </tr>
