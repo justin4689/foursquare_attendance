@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PointageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -35,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     // Routes utilisateurs protégées par le middleware admin
     Route::middleware('admin')->group(function () {
         Route::resource('users', UserController::class);
+        Route::get('login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
     });
     
     // Routes cultes protégées par auth

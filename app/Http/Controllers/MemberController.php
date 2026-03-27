@@ -148,6 +148,12 @@ class MemberController extends Controller
 
     public function destroy(Member $member)
     {
+        // Vérifier si l'utilisateur est un agent
+        if (auth()->user()->isAgent()) {
+            $this->toastr->error('Les agents n\'ont pas l\'autorisation de supprimer des membres.');
+            return redirect()->route('members.index');
+        }
+
         $attendancesCount = $member->attendances()->count();
         $memberName = "{$member->first_name} {$member->last_name}";
         

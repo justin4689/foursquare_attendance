@@ -63,7 +63,7 @@
                                     {{ __('Modifier l\'utilisateur') }}
                                 </a>
                                 
-                                @if ($user->id !== auth()->id())
+                                @if ($user->id !== auth()->id() && !auth()->user()->isAgent())
                                     <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')" class="inline">
                                         @csrf
                                         @method('DELETE')

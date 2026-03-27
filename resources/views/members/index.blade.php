@@ -84,11 +84,13 @@
                                             <span class="mx-1">|</span>
                                             <a class="underline" href="{{ route('members.edit', $member) }}">{{ __('Modifier') }}</a>
                                             <span class="mx-1">|</span>
-                                            <form action="{{ route('members.destroy', $member) }}" method="POST" class="inline" onsubmit="return confirmDeleteMember('{{ $member->first_name }} {{ $member->last_name }}', {{ $member->attendances()->count() }})">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="underline ">{{ __('Supprimer') }}</button>
-                                            </form>
+                                            @if(!auth()->user()->isAgent())
+                                                <form action="{{ route('members.destroy', $member) }}" method="POST" class="inline" onsubmit="return confirmDeleteMember('{{ $member->first_name }} {{ $member->last_name }}', {{ $member->attendances()->count() }})">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="underline ">{{ __('Supprimer') }}</button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -133,11 +135,13 @@
                                             <span class="mx-1">|</span>
                                             <a class="underline" href="{{ route('members.edit', $member) }}">{{ __('Modifier') }}</a>
                                              <span class="mx-1">|</span>
-                                            <form action="{{ route('members.destroy', $member) }}" method="POST" class="inline" onsubmit="return confirmDeleteMember('{{ $member->first_name }} {{ $member->last_name }}', {{ $member->attendances()->count() }})">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="underline ">{{ __('Supprimer') }}</button>
-                                            </form>
+                                            @if(!auth()->user()->isAgent())
+                                                <form action="{{ route('members.destroy', $member) }}" method="POST" class="inline" onsubmit="return confirmDeleteMember('{{ $member->first_name }} {{ $member->last_name }}', {{ $member->attendances()->count() }})">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="underline ">{{ __('Supprimer') }}</button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

@@ -67,6 +67,12 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        // Vérifier si l'utilisateur est un agent
+        if (auth()->user()->isAgent()) {
+            $this->toastr->error('Les agents n\'ont pas l\'autorisation de supprimer des catégories.');
+            return redirect()->route('categories.index');
+        }
+
         if ($category->members()->exists()) {
             $this->toastr->error('Impossible de supprimer : des membres sont liés.');
             return redirect()->route('categories.index');

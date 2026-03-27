@@ -59,7 +59,7 @@
                                                 <a href="{{ route('users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-800 text-sm">
                                                     {{ __('Modifier') }}
                                                 </a>
-                                                @if ($user->id !== auth()->id())
+                                                @if ($user->id !== auth()->id() && !auth()->user()->isAgent())
                                                     <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
                                                         @csrf
                                                         @method('DELETE')

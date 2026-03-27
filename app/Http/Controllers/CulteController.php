@@ -127,6 +127,12 @@ class CulteController extends Controller
 
     public function destroy(Culte $culte)
     {
+        // Vérifier si l'utilisateur est un agent
+        if (auth()->user()->isAgent()) {
+            $this->toastr->error('Les agents n\'ont pas l\'autorisation de supprimer des cultes.');
+            return redirect()->route('cultes.index');
+        }
+
         if (in_array($culte->statut, ['en_cours'])) {
             $this->toastr->error('Impossible de supprimer : ce culte est en cours.');
             return redirect()->route('cultes.index');
