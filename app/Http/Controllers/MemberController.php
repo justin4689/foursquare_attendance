@@ -60,11 +60,10 @@ class MemberController extends Controller
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
             'category_id' => 'nullable|exists:categories,id',
-            'phone' => 'nullable|string|max:20|unique:members,phone',
+            'phone' => 'nullable|string|max:20',
             'lieu_habitation' => 'nullable|string|max:255',
             'anniversaire_jour_mois' => ['nullable', 'regex:/^\d{2}\/\d{2}$/'],
         ], [
-            'phone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre membre.',
             'phone.regex' => 'Le format du numéro de téléphone est invalide.',
             'anniversaire_jour_mois.regex' => 'L\'anniversaire doit être au format JJ/MM (ex: 15/04).',
         ]);
@@ -72,6 +71,20 @@ class MemberController extends Controller
         if (($validated['type'] ?? null) !== 'permanent') {
             $validated['lieu_habitation'] = null;
             $validated['anniversaire_jour_mois'] = null;
+        }
+
+        if (!empty($validated['anniversaire_jour_mois']) && !empty($validated['lieu_habitation'])) {
+            $alreadyExists = Member::query()
+                ->where('first_name', $validated['first_name'])
+                ->where('last_name', $validated['last_name'])
+                ->where('anniversaire_jour_mois', $validated['anniversaire_jour_mois'])
+                ->where('lieu_habitation', $validated['lieu_habitation'])
+                ->exists();
+
+            if ($alreadyExists) {
+                $this->toastr->error('Ce membre semble déjà inscrit');
+                return back()->withInput();
+            }
         }
 
         $member = Member::create($validated);
@@ -88,17 +101,30 @@ class MemberController extends Controller
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
             'category_id' => 'required|exists:categories,id',
-            'phone' => 'nullable|string|max:20|unique:members,phone',
+            'phone' => 'nullable|string|max:20',
             'lieu_habitation' => 'required_if:type,permanent|nullable|string|max:255',
             'anniversaire_jour_mois' => ['required_if:type,permanent', 'nullable', 'regex:/^\d{2}\/\d{2}$/'],
         ], [
-            'phone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre membre.',
             'anniversaire_jour_mois.regex' => 'L\'anniversaire doit être au format JJ/MM (ex: 15/04).',
         ]);
 
         if (($validated['type'] ?? null) !== 'permanent') {
             $validated['lieu_habitation'] = null;
             $validated['anniversaire_jour_mois'] = null;
+        }
+
+        if (!empty($validated['anniversaire_jour_mois']) && !empty($validated['lieu_habitation'])) {
+            $alreadyExists = Member::query()
+                ->where('first_name', $validated['first_name'])
+                ->where('last_name', $validated['last_name'])
+                ->where('anniversaire_jour_mois', $validated['anniversaire_jour_mois'])
+                ->where('lieu_habitation', $validated['lieu_habitation'])
+                ->exists();
+
+            if ($alreadyExists) {
+                $this->toastr->error('Ce membre semble déjà inscrit');
+                return back()->withInput();
+            }
         }
 
         $member = Member::create($validated);
@@ -126,17 +152,31 @@ class MemberController extends Controller
             'last_name' => 'required|string|max:255',
             'type' => 'required|in:permanent,invite',
             'category_id' => 'nullable|exists:categories,id',
-            'phone' => 'nullable|string|max:20|unique:members,phone,' . $member->id,
+            'phone' => 'nullable|string|max:20',
             'lieu_habitation' => 'nullable|string|max:255',
             'anniversaire_jour_mois' => ['nullable', 'regex:/^\d{2}\/\d{2}$/'],
         ], [
-            'phone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre membre.',
             'anniversaire_jour_mois.regex' => 'L\'anniversaire doit être au format JJ/MM (ex: 15/04).',
         ]);
 
         if (($validated['type'] ?? null) !== 'permanent') {
             $validated['lieu_habitation'] = null;
             $validated['anniversaire_jour_mois'] = null;
+        }
+
+        if (!empty($validated['anniversaire_jour_mois']) && !empty($validated['lieu_habitation'])) {
+            $alreadyExists = Member::query()
+                ->where('id', '!=', $member->id)
+                ->where('first_name', $validated['first_name'])
+                ->where('last_name', $validated['last_name'])
+                ->where('anniversaire_jour_mois', $validated['anniversaire_jour_mois'])
+                ->where('lieu_habitation', $validated['lieu_habitation'])
+                ->exists();
+
+            if ($alreadyExists) {
+                $this->toastr->error('Ce membre semble déjà inscrit');
+                return back()->withInput();
+            }
         }
 
         $member->update($validated);
