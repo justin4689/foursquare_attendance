@@ -9,13 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('members', function (Blueprint $table) {
-         $table->dropUnique(['phone']); // Laravel trouvera le bon nom automatiquement
-        });
-    }
-
+   public function up(): void
+{
+    Schema::table('members', function (Blueprint $table) {
+        try {
+            $table->dropUnique(['phone']);
+        } catch (\Exception $e) {
+            // L'index n'existe pas, on ignore
+        }
+    });
+}
     /**
      * Reverse the migrations.
      */
