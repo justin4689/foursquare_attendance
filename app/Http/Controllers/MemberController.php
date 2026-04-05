@@ -21,8 +21,8 @@ class MemberController extends Controller
     {
         $search = $request->get('search', '');
         
-        $permanentsQuery = Member::with('category')->where('type', 'permanent');
-        $invitesQuery = Member::with('category')->where('type', 'invite');
+        $permanentsQuery = Member::with('category')->where('type', 'permanent')->orderBy('last_name')->orderBy('first_name');
+        $invitesQuery = Member::with('category')->where('type', 'invite')->orderBy('last_name')->orderBy('first_name');
         
         if (!empty($search)) {
             $searchTerm = '%' . $search . '%';

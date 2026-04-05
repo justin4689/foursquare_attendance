@@ -9,23 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::table('members', function (Blueprint $table) {
-        try {
-            $table->dropUnique(['phone']);
-        } catch (\Exception $e) {
-            // L'index n'existe pas, on ignore
+    public function up(): void
+    {
+        $indexes = DB::select("SHOW INDEX FROM members WHERE Key_name = 'members_phone_unique'");
+        if (count($indexes) > 0) {
+            Schema::table('members', function (Blueprint $table) {
+                $table->dropUnique(['phone']);
+            });
         }
-    });
-}
+    }
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('members', function (Blueprint $table) {
-            $table->unique('phone');
-        });
+        // Cannot restore unique constraint — duplicate phone values exist in the database
     }
 };
