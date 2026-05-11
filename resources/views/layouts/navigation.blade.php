@@ -31,6 +31,10 @@
                     <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
                         {{ __('Catégories') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('rendez-vous.index')" :active="request()->routeIs('rendez-vous.*')">
+                        {{ __('Rendez-vous') }}
+                    </x-nav-link>
                     
                     @if(auth()->user()->isAdmin())
                     <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">

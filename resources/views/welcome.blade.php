@@ -70,6 +70,18 @@
                             "La maturité pour une pêche abondante en eau profonde." — Luc 5:4
                         </p>
                     </div>
+                    
+                    <!-- Lien Rendez-vous -->
+                    <div class="text-center my-4">
+                        <a href="{{ route('rendez-vous.create') }}"
+                           class="inline-flex items-center gap-2 text-sm text-[#185696] hover:underline font-medium">
+                            📅 Prendre un rendez-vous avec un pasteur
+                        </a>
+                    </div>
+
+                    <hr class="border-gray-200 mb-4">
+
+                    
 
                     <!-- Register Form -->
                     <div id="registerForm" class="space-y-6 hidden">
@@ -138,6 +150,7 @@
                     </div>
 
                     
+
 
                     <!-- Attendance Form -->
                     <div id="attendanceForm" class="space-y-6">

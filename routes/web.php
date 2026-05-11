@@ -9,6 +9,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PointageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginLogController;
+use App\Http\Controllers\RendezVousController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -20,12 +21,25 @@ Route::post('/members/public', [MemberController::class, 'storePublic'])->name('
 
 Route::get('/pointage', [PointageController::class, 'intelligent'])->name('pointage.intelligent');
 
+// Rendez-vous — partie publique (sans authentification)
+Route::get('/rendez-vous/prendre', [RendezVousController::class, 'create'])->name('rendez-vous.create');
+Route::post('/rendez-vous', [RendezVousController::class, 'store'])->name('rendez-vous.store');
+Route::get('/rendez-vous/confirmation', [RendezVousController::class, 'confirmation'])->name('rendez-vous.confirmation');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Rendez-vous — partie admin (authentifiée)
+    Route::get('/rendez-vous', [RendezVousController::class, 'index'])->name('rendez-vous.index');
+    Route::get('/rendez-vous/{rendezVou}', [RendezVousController::class, 'show'])->name('rendez-vous.show');
+    Route::patch('/rendez-vous/{rendezVou}/statut', [RendezVousController::class, 'updateStatut'])->name('rendez-vous.statut');
+    Route::middleware('admin')->group(function () {
+        Route::delete('/rendez-vous/{rendezVou}', [RendezVousController::class, 'destroy'])->name('rendez-vous.destroy');
+    });
 
     Route::resource('members', MemberController::class);
     Route::get('members/export/pdf', [MemberController::class, 'exportPDF'])->name('members.export.pdf');
