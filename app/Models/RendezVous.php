@@ -52,7 +52,7 @@ class RendezVous extends Model
     ];
 
     public const MOTIFS = [
-        'Counseling spirituel',
+        'Conseil spirituel',
         'Prière personnelle',
         'Préparation au baptême',
         'Conseil matrimonial',

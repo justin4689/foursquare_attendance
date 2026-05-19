@@ -12,7 +12,7 @@ use App\Http\Controllers\LoginLogController;
 use App\Http\Controllers\RendezVousController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
+Route::get('/',[AttendanceController::class, 'index'])->name('attendance.index');
 Route::get('/attendance/search', [AttendanceController::class, 'search'])->name('attendance.search');
 Route::get('/attendance/pointage', [AttendanceController::class, 'pointage'])->name('attendance.pointage');
 Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -27,6 +27,8 @@ Route::post('/rendez-vous', [RendezVousController::class, 'store'])->name('rende
 Route::get('/rendez-vous/confirmation', [RendezVousController::class, 'confirmation'])->name('rendez-vous.confirmation');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard/absents-mensuels', [DashboardController::class, 'absentsMensuels'])->middleware(['auth'])->name('dashboard.absents-mensuels');
+Route::get('/dashboard/absents-mensuels/pdf', [DashboardController::class, 'absentsMensuelsPDF'])->middleware(['auth'])->name('dashboard.absents-mensuels.pdf');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
