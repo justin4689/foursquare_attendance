@@ -116,8 +116,9 @@
     <table class="stats-row">
         <tr>
             <td class="stat-card">
-                <div class="stat-number">{{ $cultes->count() }}</div>
-                <div class="stat-label">Cultes du mois</div>
+                <div class="stat-number">{{ $totalJours }}</div>
+                <div class="stat-label">Jours de culte</div>
+                <div style="font-size:9px;color:#888;">{{ $cultes->count() }} culte(s) au total</div>
             </td>
             <td class="stat-card">
                 <div class="stat-number">{{ $totalPermanents }}</div>
@@ -129,16 +130,18 @@
             </td>
             <td class="stat-card">
                 <div class="stat-number text-green">{{ $totalPermanents - $membresAbsents->count() }}</div>
-                <div class="stat-label">Présents à tous les cultes</div>
+                <div class="stat-label">Présents à tous les jours</div>
             </td>
         </tr>
     </table>
 
-    {{-- Cultes du mois --}}
-    <div class="section-title">Cultes du mois</div>
+    {{-- Jours de culte du mois --}}
+    <div class="section-title">Jours de culte du mois</div>
     <div class="cultes-list">
-        @foreach($cultes as $culte)
-            {{ $culte->name }} ({{ $culte->date->format('d/m') }})@if(!$loop->last) &nbsp;·&nbsp; @endif
+        @foreach($cultesByDay as $dateKey => $cultesOfDay)
+            {{ \Carbon\Carbon::parse($dateKey)->format('d/m') }}
+            @if($cultesOfDay->count() > 1)({{ $cultesOfDay->count() }} cultes)@else— {{ $cultesOfDay->first()->name }}@endif
+            @if(!$loop->last) &nbsp;·&nbsp; @endif
         @endforeach
     </div>
 
@@ -153,7 +156,7 @@
                 <th>Prénom</th>
                 <th>Catégorie</th>
                 <th>Contact</th>
-                <th class="text-center">Absences / Total</th>
+                <th class="text-center">Jours absents / Total</th>
                 <th class="text-center">Taux présence</th>
                 <th>Dates d'absence</th>
             </tr>
@@ -170,7 +173,7 @@
                     <td>{{ $data['member']->first_name }}</td>
                     <td>{{ $data['member']->category->name ?? 'NC' }}</td>
                     <td>{{ $data['member']->phone ?? '—' }}</td>
-                    <td class="text-center text-red">{{ $data['nb_absences'] }} / {{ $cultes->count() }}</td>
+                    <td class="text-center text-red">{{ $data['nb_absences'] }} / {{ $totalJours }}</td>
                     <td class="text-center {{ $tauxClass }}">{{ $taux }}%</td>
                     <td>
                         @foreach($data['dates_absences'] as $absence)
@@ -183,7 +186,7 @@
     </table>
     @else
         <p style="color: #27ae60; font-weight: bold;">
-            Tous les membres permanents étaient présents à tous les cultes de {{ $moisLabel }}.
+            Tous les membres permanents étaient présents à chaque jour de culte de {{ $moisLabel }}.
         </p>
     @endif
 

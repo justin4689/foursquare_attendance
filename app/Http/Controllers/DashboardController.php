@@ -69,11 +69,11 @@ class DashboardController extends Controller
         $mois  = (int) $request->input('mois', now()->month);
         $annee = (int) $request->input('annee', now()->year);
 
-        [$cultes, $membresAbsents, $totalPermanents] = $this->buildAbsentsData($mois, $annee);
+        [$cultes, $cultesByDay, $membresAbsents, $totalPermanents, $totalJours] = $this->buildAbsentsData($mois, $annee);
 
         $moisLabel = (self::$moisFr[$mois] ?? $mois) . ' ' . $annee;
 
-        return view('dashboard.absents-mensuels', compact('cultes', 'membresAbsents', 'mois', 'annee', 'moisLabel', 'totalPermanents'));
+        return view('dashboard.absents-mensuels', compact('cultes', 'cultesByDay', 'membresAbsents', 'mois', 'annee', 'moisLabel', 'totalPermanents', 'totalJours'));
     }
 
     public function absentsMensuelsPDF(Request $request)
@@ -81,11 +81,11 @@ class DashboardController extends Controller
         $mois  = (int) $request->input('mois', now()->month);
         $annee = (int) $request->input('annee', now()->year);
 
-        [$cultes, $membresAbsents, $totalPermanents] = $this->buildAbsentsData($mois, $annee);
+        [$cultes, $cultesByDay, $membresAbsents, $totalPermanents, $totalJours] = $this->buildAbsentsData($mois, $annee);
 
         $moisLabel = (self::$moisFr[$mois] ?? $mois) . ' ' . $annee;
 
-        $pdf = Pdf::loadView('dashboard.absents-mensuels-pdf', compact('cultes', 'membresAbsents', 'mois', 'annee', 'moisLabel', 'totalPermanents'));
+        $pdf = Pdf::loadView('dashboard.absents-mensuels-pdf', compact('cultes', 'cultesByDay', 'membresAbsents', 'mois', 'annee', 'moisLabel', 'totalPermanents', 'totalJours'));
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->download("rapport-absents-{$annee}-{$mois}.pdf");
@@ -101,8 +101,10 @@ class DashboardController extends Controller
             ->orderBy('heure')
             ->get();
 
+        // Regrouper par jour — un membre présent à AU MOINS 1 culte ce jour n'est pas absent
+        $cultesByDay = $cultes->groupBy(fn($c) => $c->date->format('Y-m-d'));
+        $totalJours  = $cultesByDay->count();
         $culteIds    = $cultes->pluck('id');
-        $totalCultes = $cultes->count();
 
         $members = Member::with(['category', 'attendances' => function ($q) use ($culteIds) {
             $q->whereIn('culte_id', $culteIds);
@@ -114,25 +116,26 @@ class DashboardController extends Controller
 
         $totalPermanents = $members->count();
 
-        $membresAbsents = $members->map(function ($member) use ($cultes, $totalCultes) {
-            $attendancesByCulteId = $member->attendances->keyBy('culte_id');
+        $membresAbsents = $members->map(function ($member) use ($cultesByDay, $totalJours) {
+            $byId = $member->attendances->keyBy('culte_id');
 
-            $cultesAbsents = $cultes->filter(function ($culte) use ($attendancesByCulteId) {
-                $att = $attendancesByCulteId->get($culte->id);
-                return $att === null || !$att->status;
-            });
+            // Absent d'un jour = absent de TOUS les cultes de ce jour
+            $joursAbsents = $cultesByDay->filter(
+                fn($cultesOfDay) => $cultesOfDay->every(
+                    fn($culte) => ($att = $byId->get($culte->id)) === null || !$att->status
+                )
+            );
 
-            $nbAbsences  = $cultesAbsents->count();
-            $nbPresences = $totalCultes - $nbAbsences;
+            $nbAbsences  = $joursAbsents->count();
+            $nbPresences = $totalJours - $nbAbsences;
 
             return [
                 'member'         => $member,
                 'nb_absences'    => $nbAbsences,
                 'nb_presences'   => $nbPresences,
-                'taux_presence'  => $totalCultes > 0 ? round(($nbPresences / $totalCultes) * 100) : 0,
-                'dates_absences' => $cultesAbsents->map(fn($c) => [
-                    'date' => $c->date->format('d/m'),
-                    'name' => $c->name,
+                'taux_presence'  => $totalJours > 0 ? round($nbPresences / $totalJours * 100) : 0,
+                'dates_absences' => $joursAbsents->map(fn($cultesOfDay, $dateKey) => [
+                    'date' => \Carbon\Carbon::parse($dateKey)->format('d/m'),
                 ])->values(),
             ];
         })
@@ -140,6 +143,6 @@ class DashboardController extends Controller
             ->sortByDesc('nb_absences')
             ->values();
 
-        return [$cultes, $membresAbsents, $totalPermanents];
+        return [$cultes, $cultesByDay, $membresAbsents, $totalPermanents, $totalJours];
     }
 }
