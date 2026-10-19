@@ -91,6 +91,69 @@ class DashboardController extends Controller
         return $pdf->download("rapport-absents-{$annee}-{$mois}.pdf");
     }
 
+    public function nouveauxMembres(Request $request)
+    {
+        $mois  = (int) $request->input('mois', now()->month);
+        $annee = (int) $request->input('annee', now()->year);
+
+        [$nouveaux, $parCulte, $sansCulte] = $this->buildNouveauxMembresData($mois, $annee);
+
+        $moisLabel = (self::$moisFr[$mois] ?? $mois) . ' ' . $annee;
+
+        return view('dashboard.nouveaux-membres', compact('nouveaux', 'parCulte', 'sansCulte', 'mois', 'annee', 'moisLabel'));
+    }
+
+    public function nouveauxMembresPDF(Request $request)
+    {
+        $mois  = (int) $request->input('mois', now()->month);
+        $annee = (int) $request->input('annee', now()->year);
+
+        [$nouveaux, $parCulte, $sansCulte] = $this->buildNouveauxMembresData($mois, $annee);
+
+        $moisLabel = (self::$moisFr[$mois] ?? $mois) . ' ' . $annee;
+
+        $pdf = Pdf::loadView('dashboard.nouveaux-membres-pdf', compact('nouveaux', 'parCulte', 'sansCulte', 'mois', 'annee', 'moisLabel'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download("rapport-nouveaux-membres-{$annee}-{$mois}.pdf");
+    }
+
+    private function buildNouveauxMembresData(int $mois, int $annee): array
+    {
+        // Nouveau membre = inscrit (created_at) durant le mois sélectionné
+        $members = Member::with(['category', 'attendances' => function ($q) {
+            $q->where('status', true)->with('culte');
+        }])
+            ->whereYear('created_at', $annee)
+            ->whereMonth('created_at', $mois)
+            ->orderBy('created_at')
+            ->get();
+
+        // Culte d'arrivée = premier culte où le membre a été pointé présent
+        $nouveaux = $members->map(function ($member) {
+            $premier = $member->attendances
+                ->filter(fn($att) => $att->culte !== null)
+                ->sortBy(fn($att) => $att->culte->date->format('Y-m-d') . ' ' . ($att->culte->heure?->format('H:i') ?? ''))
+                ->first();
+
+            return [
+                'member'           => $member,
+                'premier_culte'    => $premier?->culte,
+                'nb_presences'     => $member->attendances->count(),
+                'date_inscription' => $member->created_at->format('d/m/Y'),
+            ];
+        });
+
+        $parCulte = $nouveaux
+            ->filter(fn($d) => $d['premier_culte'] !== null)
+            ->groupBy(fn($d) => $d['premier_culte']->id)
+            ->sortBy(fn($group) => $group->first()['premier_culte']->date->format('Y-m-d') . ' ' . ($group->first()['premier_culte']->heure?->format('H:i') ?? ''));
+
+        $sansCulte = $nouveaux->filter(fn($d) => $d['premier_culte'] === null)->values();
+
+        return [$nouveaux, $parCulte, $sansCulte];
+    }
+
     private function buildAbsentsData(int $mois, int $annee): array
     {
         $cultes = Culte::query()

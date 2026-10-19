@@ -29,6 +29,8 @@ Route::get('/rendez-vous/confirmation', [RendezVousController::class, 'confirmat
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 Route::get('/dashboard/absents-mensuels', [DashboardController::class, 'absentsMensuels'])->middleware(['auth'])->name('dashboard.absents-mensuels');
 Route::get('/dashboard/absents-mensuels/pdf', [DashboardController::class, 'absentsMensuelsPDF'])->middleware(['auth'])->name('dashboard.absents-mensuels.pdf');
+Route::get('/dashboard/nouveaux-membres', [DashboardController::class, 'nouveauxMembres'])->middleware(['auth'])->name('dashboard.nouveaux-membres');
+Route::get('/dashboard/nouveaux-membres/pdf', [DashboardController::class, 'nouveauxMembresPDF'])->middleware(['auth'])->name('dashboard.nouveaux-membres.pdf');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
