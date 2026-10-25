@@ -118,6 +118,80 @@ class DashboardController extends Controller
         return $pdf->download("rapport-nouveaux-membres-{$annee}-{$mois}.pdf");
     }
 
+    public function presencesMensuelles(Request $request)
+    {
+        $mois  = (int) $request->input('mois', now()->month);
+        $annee = (int) $request->input('annee', now()->year);
+
+        [$cultes, $cultesByDay, $presences, $totalJours] = $this->buildPresencesData($mois, $annee);
+
+        $moisLabel = (self::$moisFr[$mois] ?? $mois) . ' ' . $annee;
+
+        return view('dashboard.presences-mensuelles', compact('cultes', 'cultesByDay', 'presences', 'totalJours', 'mois', 'annee', 'moisLabel'));
+    }
+
+    public function presencesMensuellesPDF(Request $request)
+    {
+        $mois  = (int) $request->input('mois', now()->month);
+        $annee = (int) $request->input('annee', now()->year);
+
+        [$cultes, $cultesByDay, $presences, $totalJours] = $this->buildPresencesData($mois, $annee);
+
+        $moisLabel = (self::$moisFr[$mois] ?? $mois) . ' ' . $annee;
+
+        $pdf = Pdf::loadView('dashboard.presences-mensuelles-pdf', compact('cultes', 'cultesByDay', 'presences', 'totalJours', 'mois', 'annee', 'moisLabel'));
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->download("liste-presence-{$annee}-{$mois}.pdf");
+    }
+
+    private function buildPresencesData(int $mois, int $annee): array
+    {
+        $cultes = Culte::query()
+            ->whereYear('date', $annee)
+            ->whereMonth('date', $mois)
+            ->whereDate('date', '<', now())
+            ->orderBy('date')
+            ->orderBy('heure')
+            ->get();
+
+        // Présent un jour = présent à AU MOINS 1 culte de ce jour (même logique que les absents)
+        $cultesByDay = $cultes->groupBy(fn($c) => $c->date->format('Y-m-d'));
+        $totalJours  = $cultesByDay->count();
+        $culteIds    = $cultes->pluck('id');
+
+        // Tous les permanents + les invités venus au moins une fois dans le mois
+        $members = Member::with(['category', 'attendances' => function ($q) use ($culteIds) {
+            $q->whereIn('culte_id', $culteIds)->where('status', true);
+        }])
+            ->where(function ($q) use ($culteIds) {
+                $q->where('type', 'permanent')
+                  ->orWhereHas('attendances', fn($a) => $a->whereIn('culte_id', $culteIds)->where('status', true));
+            })
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
+
+        $presences = $members->map(function ($member) use ($cultesByDay, $totalJours) {
+            $presentIds = $member->attendances->pluck('culte_id')->flip();
+
+            $jours = $cultesByDay->map(
+                fn($cultesOfDay) => $cultesOfDay->contains(fn($culte) => $presentIds->has($culte->id))
+            );
+
+            $nbPresences = $jours->filter()->count();
+
+            return [
+                'member'        => $member,
+                'jours'         => $jours,
+                'nb_presences'  => $nbPresences,
+                'taux_presence' => $totalJours > 0 ? round($nbPresences / $totalJours * 100) : 0,
+            ];
+        })->values();
+
+        return [$cultes, $cultesByDay, $presences, $totalJours];
+    }
+
     private function buildNouveauxMembresData(int $mois, int $annee): array
     {
         // Nouveau membre = inscrit (created_at) durant le mois sélectionné
