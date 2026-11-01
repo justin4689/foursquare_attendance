@@ -5,6 +5,11 @@
                 {{ __('Tableau de bord') }}
             </h2>
             <div class="flex flex-wrap gap-2">
+                <a href="{{ route('dashboard.enfants') }}">
+                    <x-primary-button type="button">
+                        Liste des enfants
+                    </x-primary-button>
+                </a>
                 <a href="{{ route('dashboard.presences-mensuelles') }}">
                     <x-primary-button type="button">
                         Liste de présence mensuelle

@@ -33,6 +33,8 @@ Route::get('/dashboard/nouveaux-membres', [DashboardController::class, 'nouveaux
 Route::get('/dashboard/nouveaux-membres/pdf', [DashboardController::class, 'nouveauxMembresPDF'])->middleware(['auth'])->name('dashboard.nouveaux-membres.pdf');
 Route::get('/dashboard/presences-mensuelles', [DashboardController::class, 'presencesMensuelles'])->middleware(['auth'])->name('dashboard.presences-mensuelles');
 Route::get('/dashboard/presences-mensuelles/pdf', [DashboardController::class, 'presencesMensuellesPDF'])->middleware(['auth'])->name('dashboard.presences-mensuelles.pdf');
+Route::get('/dashboard/enfants', [DashboardController::class, 'enfants'])->middleware(['auth'])->name('dashboard.enfants');
+Route::get('/dashboard/enfants/pdf', [DashboardController::class, 'enfantsPDF'])->middleware(['auth'])->name('dashboard.enfants.pdf');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

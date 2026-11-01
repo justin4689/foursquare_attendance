@@ -141,6 +141,7 @@
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Catégorie</th>
+                    <th>Contact</th>
                     @foreach($cultesByDay as $dateKey => $cultesOfDay)
                         <th class="text-center">{{ \Carbon\Carbon::parse($dateKey)->format('d/m') }}</th>
                     @endforeach
@@ -159,6 +160,7 @@
                         <td>{{ $data['member']->last_name }}</td>
                         <td>{{ $data['member']->first_name }}@if($data['member']->type === 'invite') (Invité)@endif</td>
                         <td>{{ $data['member']->category->name ?? 'NC' }}</td>
+                        <td>{{ $data['member']->phone ?? '—' }}</td>
                         @foreach($data['jours'] as $present)
                             <td class="text-center {{ $present ? 'present' : 'absent' }}">{{ $present ? 'P' : 'A' }}</td>
                         @endforeach
@@ -169,7 +171,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" style="text-align:right;">Présents par jour</td>
+                    <td colspan="5" style="text-align:right;">Présents par jour</td>
                     @foreach($presentsParJour as $nb)
                         <td class="text-center">{{ $nb }}</td>
                     @endforeach

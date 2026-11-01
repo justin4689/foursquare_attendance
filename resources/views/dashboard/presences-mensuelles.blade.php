@@ -89,6 +89,7 @@
                                         <th class="py-2 px-3">Nom</th>
                                         <th class="py-2 px-3">Prénom</th>
                                         <th class="py-2 px-3">Catégorie</th>
+                                        <th class="py-2 px-3">Contact</th>
                                         @foreach($cultesByDay as $dateKey => $cultesOfDay)
                                             <th class="py-2 px-2 text-center whitespace-nowrap" title="{{ $cultesOfDay->pluck('name')->join(', ') }}">
                                                 {{ \Carbon\Carbon::parse($dateKey)->format('d/m') }}
@@ -114,6 +115,7 @@
                                                 @endif
                                             </td>
                                             <td class="py-2 px-3 text-gray-500">{{ $data['member']->category->name ?? '—' }}</td>
+                                            <td class="py-2 px-3 text-gray-500 whitespace-nowrap">{{ $data['member']->phone ?? '—' }}</td>
                                             @foreach($data['jours'] as $present)
                                                 <td class="py-2 px-2 text-center font-bold {{ $present ? 'text-green-600' : 'text-red-400' }}">
                                                     {{ $present ? '✓' : '✗' }}
@@ -129,7 +131,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="bg-gray-50 font-semibold">
-                                        <td colspan="4" class="py-2 px-3 text-right">Présents par jour</td>
+                                        <td colspan="5" class="py-2 px-3 text-right">Présents par jour</td>
                                         @foreach($presentsParJour as $nb)
                                             <td class="py-2 px-2 text-center">{{ $nb }}</td>
                                         @endforeach

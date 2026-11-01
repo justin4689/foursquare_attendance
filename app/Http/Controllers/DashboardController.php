@@ -145,6 +145,55 @@ class DashboardController extends Controller
         return $pdf->download("liste-presence-{$annee}-{$mois}.pdf");
     }
 
+    public function enfants()
+    {
+        [$enfants, $categorieTrouvee] = $this->buildEnfantsData();
+
+        return view('dashboard.enfants', compact('enfants', 'categorieTrouvee'));
+    }
+
+    public function enfantsPDF()
+    {
+        [$enfants, $categorieTrouvee] = $this->buildEnfantsData();
+
+        $pdf = Pdf::loadView('dashboard.enfants-pdf', compact('enfants', 'categorieTrouvee'));
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->download('liste-enfants-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function buildEnfantsData(): array
+    {
+        $categorie = Category::whereRaw('LOWER(name) = ?', ['enfant'])->first();
+
+        if (!$categorie) {
+            return [collect(), false];
+        }
+
+        $enfants = Member::with(['category', 'attendances' => function ($q) {
+            $q->where('status', true)->with('culte');
+        }])
+            ->where('category_id', $categorie->id)
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get()
+            ->map(function ($member) {
+                $derniere = $member->attendances
+                    ->filter(fn($att) => $att->culte !== null)
+                    ->sortByDesc(fn($att) => $att->culte->date->format('Y-m-d'))
+                    ->first();
+
+                return [
+                    'member'            => $member,
+                    'nb_presences'      => $member->attendances->count(),
+                    'derniere_presence' => $derniere?->culte->date->format('d/m/Y'),
+                    'date_inscription'  => $member->created_at->format('d/m/Y à H:i'),
+                ];
+            });
+
+        return [$enfants, true];
+    }
+
     private function buildPresencesData(int $mois, int $annee): array
     {
         $cultes = Culte::query()
@@ -214,7 +263,7 @@ class DashboardController extends Controller
                 'member'           => $member,
                 'premier_culte'    => $premier?->culte,
                 'nb_presences'     => $member->attendances->count(),
-                'date_inscription' => $member->created_at->format('d/m/Y'),
+                'date_inscription' => $member->created_at->format('d/m/Y à H:i'),
             ];
         });
 
