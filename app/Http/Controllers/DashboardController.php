@@ -187,7 +187,7 @@ class DashboardController extends Controller
                     'member'            => $member,
                     'nb_presences'      => $member->attendances->count(),
                     'derniere_presence' => $derniere?->culte->date->format('d/m/Y'),
-                    'date_inscription'  => $member->created_at->format('d/m/Y à H:i'),
+                    'date_inscription'  => $member->created_at?->format('d/m/Y à H:i') ?? '—',
                 ];
             });
 
@@ -263,7 +263,7 @@ class DashboardController extends Controller
                 'member'           => $member,
                 'premier_culte'    => $premier?->culte,
                 'nb_presences'     => $member->attendances->count(),
-                'date_inscription' => $member->created_at->format('d/m/Y à H:i'),
+                'date_inscription' => $member->created_at?->format('d/m/Y à H:i') ?? '—',
             ];
         });
 
